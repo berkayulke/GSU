@@ -130,7 +130,6 @@ void print_person_list(SLList *head, CityList *city_list)
 void search_person(SLList *head, char *surname, CityList *city_list)
 {
   SLList *cur = head;
-  SLList *prev = NULL;
 
   while (cur)
   {
@@ -141,7 +140,6 @@ void search_person(SLList *head, char *surname, CityList *city_list)
       print_person(cur->person, city_list);
       return;
     }
-    prev = cur;
     cur = cur->next;
   }
   printf("Couldn't find it \n");
@@ -209,7 +207,6 @@ CityList *add_city(CityList *head, City *new_city)
 City *search_city(CityList *head, char *name)
 {
   CityList *cur = head;
-  CityList *prev = NULL;
 
   while (cur->city)
   {
@@ -217,7 +214,6 @@ City *search_city(CityList *head, char *name)
     {
       return cur->city;
     }
-    prev = cur;
     cur = cur->next;
   }
   return NULL;
