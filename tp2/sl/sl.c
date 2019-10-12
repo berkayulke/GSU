@@ -211,7 +211,7 @@ City *search_city(CityList *head, char *name)
   CityList *cur = head;
   CityList *prev = NULL;
 
-  while (cur)
+  while (cur->city)
   {
     if (strcmp(cur->city->name, name) == 0)
     {
