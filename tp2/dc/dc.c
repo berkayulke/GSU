@@ -105,7 +105,7 @@ PersonList *delete_person(PersonList *head, char *surname)
     return for_ret;
   }
 
-  while (cur != head)
+  while (cur != head && head->person)
   {
     if (strcmp(cur->person->surname, surname) == 0)
     {
@@ -298,7 +298,7 @@ CityList *delete_city(CityList *head, char *name)
     return for_ret;
   }
 
-  while (cur != head)
+  while (cur != head && head->city)
   {
     if (strcmp(cur->city->name, name) == 0)
     {

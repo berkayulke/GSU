@@ -67,11 +67,10 @@ PersonList *add_person(PersonList *head, Person *new_pers)
     else
       return head;
   }
-  PersonList *prev = head;
-  PersonList *cur = head->next;
   if (strcmp(head->person->surname, new_pers->surname) >= 0)
     return add_person_before(head, new_pers);
 
+  PersonList *cur = head->next;
   while (cur != head)
   {
     if (strcmp(cur->person->surname, new_pers->surname) >= 0)
@@ -79,7 +78,6 @@ PersonList *add_person(PersonList *head, Person *new_pers)
       add_person_before(cur, new_pers);
       return head;
     }
-    prev = cur;
     cur = cur->next;
   }
   add_person_before(head, new_pers);
@@ -104,7 +102,7 @@ PersonList *delete_person(PersonList *head, char *surname)
     return for_ret;
   }
 
-  while (cur != head)
+  while (cur != head && head->person)
   {
     if (strcmp(cur->person->surname, surname) == 0)
     {
@@ -144,10 +142,8 @@ void print_person_list(PersonList *head, CityList *city_list)
   PersonList *cur = head;
   PersonList *last = get_last_person(head);
 
-  while (cur->person)
+  while (cur->person && cur != last)
   {
-    if (cur == last)
-      break;
     print_person(cur->person, city_list);
     cur = cur->next;
   }
@@ -160,10 +156,8 @@ void search_person(PersonList *head, char *surname, CityList *city_list)
   PersonList *cur = head;
   PersonList *last = get_last_person(head);
 
-  while (cur)
+  while (cur && cur != last)
   {
-    if (cur == last)
-      break;
     if (strcmp(cur->person->surname, surname) == 0)
     {
       printf("-------------------\n");
@@ -240,12 +234,10 @@ CityList *add_city(CityList *head, City *new_city)
     else
       return head;
   }
-  CityList *prev = head;
-  CityList *cur = head->next;
-
   if (strcmp(head->city->name, new_city->name) >= 0)
     return add_city_before(head, new_city);
 
+  CityList *cur = head->next;
   while (cur != head)
   {
     if (strcmp(cur->city->name, new_city->name) >= 0)
@@ -253,7 +245,6 @@ CityList *add_city(CityList *head, City *new_city)
       add_city_before(cur, new_city);
       return head;
     }
-    prev = cur;
     cur = cur->next;
   }
   add_city_before(head, new_city);
@@ -300,7 +291,7 @@ CityList *delete_city(CityList *head, char *name)
     return for_ret;
   }
 
-  while (cur != head)
+  while (cur != head && head->city)
   {
     if (strcmp(cur->city->name, name) == 0)
     {
