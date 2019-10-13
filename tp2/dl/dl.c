@@ -123,7 +123,7 @@ void print_person_list(SLList *head, CityList *city_list)
 {
   printf("-------------------\n");
   SLList *cur = head;
-  while (cur)
+  while (cur->person)
   {
     print_person(cur->person, city_list);
     cur = cur->next;

@@ -21,7 +21,7 @@ Person *create_person(char *name, char *surname, char *city, char *homeNumber)
 SLList *create_empty_person_list()
 {
   SLList *head = malloc(sizeof(SLList));
-  head->next = NULL;
+  head->next = head;
   head->person = NULL;
   return head;
 }
@@ -32,42 +32,71 @@ Person *copy_person(Person *source)
   return target;
 }
 
+SLList *get_last(SLList *head)
+{
+  SLList *cur = head;
+  while (cur->next != head)
+    cur = cur->next;
+  return cur;
+}
+
+SLList *add_before(SLList *head, Person *new_pers)
+{
+  SLList *new_node = create_empty_person_list();
+  get_last(head)->next = new_node;
+  new_node->person = copy_person(new_pers);
+  new_node->next = head;
+  return new_node;
+}
+
 SLList *add_person(SLList *head, Person *new_pers)
 {
+  //boşsa
   if (!head->person)
   {
     head->person = copy_person(new_pers);
-    head->next = NULL;
+    head->next = head;
     return head;
   }
-  SLList *cur = head;
-  SLList *prev = NULL;
-  while (cur)
+  //tek elemanlıysa
+  else if (head->next == head)
+  {
+    SLList *new_node = create_empty_person_list();
+    new_node->person = copy_person(new_pers);
+    new_node->next = head;
+    head->next = new_node;
+    if (strcmp(head->person->surname, new_pers->surname) >= 0)
+      return new_node;
+    else
+      return head;
+  }
+  SLList *prev = head;
+  SLList *cur = head->next;
+  if (strcmp(head->person->surname, new_pers->surname) >= 0)
+  {
+    SLList *new_node = create_empty_person_list();
+    get_last(head)->next = new_node;
+    new_node->person = copy_person(new_pers);
+    new_node->next = head;
+    return new_node;
+  }
+  while (cur != head)
   {
     if (strcmp(cur->person->surname, new_pers->surname) >= 0)
     {
       SLList *new_node = create_empty_person_list();
+      prev->next = new_node;
+      new_node->person = copy_person(new_pers);
       new_node->next = cur;
-      if (prev)
-      {
-        prev->next = new_node;
-        new_node->person = copy_person(new_pers);
-        return head;
-      }
-      else
-      {
-        new_node->next = head;
-        new_node->person = copy_person(new_pers);
-        //head'i new_node yap
-        return new_node;
-      }
+      return head;
     }
-
     prev = cur;
     cur = cur->next;
   }
-  prev->next = create_empty_person_list();
-  prev->next->person = copy_person(new_pers);
+  SLList *last = get_last(head);
+  last->next = create_empty_person_list();
+  last->next->next = head;
+  last->next->person = copy_person(new_pers);
   return head;
 }
 
@@ -100,7 +129,7 @@ SLList *delete_person(SLList *head, char *surname)
 void print_person(Person *person, CityList *city_list)
 {
   City *city = NULL;
-  city = search_city(city_list, person->city);
+  //city = search_city(city_list, person->city);
   printf("Name:       %s\n", person->name);
   printf("Surname:    %s\n", person->surname);
   printf("City:       %s\n", person->city);
@@ -120,11 +149,16 @@ void print_person_list(SLList *head, CityList *city_list)
 {
   printf("-------------------\n");
   SLList *cur = head;
-  while (cur)
+  SLList *last = get_last(head);
+
+  while (cur->person)
   {
+    if (cur == last)
+      break;
     print_person(cur->person, city_list);
     cur = cur->next;
   }
+  print_person(cur->person, city_list);
 }
 
 void search_person(SLList *head, char *surname, CityList *city_list)
@@ -208,6 +242,8 @@ CityList *add_city(CityList *head, City *new_city)
 
 City *search_city(CityList *head, char *name)
 {
+  if (!head || !name)
+    return NULL;
   CityList *cur = head;
   CityList *prev = NULL;
 
