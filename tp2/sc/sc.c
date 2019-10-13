@@ -61,12 +61,9 @@ SLList *add_person(SLList *head, Person *new_pers)
   //tek elemanlıysa
   else if (head->next == head)
   {
-    SLList *new_node = create_empty_person_list();
-    new_node->person = copy_person(new_pers);
-    new_node->next = head;
-    head->next = new_node;
+    add_before(head, new_pers);
     if (strcmp(head->person->surname, new_pers->surname) >= 0)
-      return new_node;
+      return head->next;
     else
       return head;
   }
@@ -74,29 +71,19 @@ SLList *add_person(SLList *head, Person *new_pers)
   SLList *cur = head->next;
   if (strcmp(head->person->surname, new_pers->surname) >= 0)
   {
-    SLList *new_node = create_empty_person_list();
-    get_last(head)->next = new_node;
-    new_node->person = copy_person(new_pers);
-    new_node->next = head;
-    return new_node;
+    return add_before(head, new_pers);
   }
   while (cur != head)
   {
     if (strcmp(cur->person->surname, new_pers->surname) >= 0)
     {
-      SLList *new_node = create_empty_person_list();
-      prev->next = new_node;
-      new_node->person = copy_person(new_pers);
-      new_node->next = cur;
+      add_before(cur, new_pers);
       return head;
     }
     prev = cur;
     cur = cur->next;
   }
-  SLList *last = get_last(head);
-  last->next = create_empty_person_list();
-  last->next->next = head;
-  last->next->person = copy_person(new_pers);
+  add_before(head, new_pers);
   return head;
 }
 
