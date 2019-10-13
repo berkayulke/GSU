@@ -112,6 +112,7 @@ PersonList *delete_person(PersonList *head, char *surname)
       free(cur);
       return head;
     }
+    prev = cur;
     cur = cur->next;
   }
   printf("Couldn't find it\n");

@@ -53,13 +53,15 @@ SLList *add_person(SLList *head, Person *new_pers)
       if (cur->prev)
       {
         cur->prev->next = new_node;
+        new_node->prev = cur->prev;
+        cur->prev = new_node;
         new_node->person = copy_person(new_pers);
         return head;
       }
       else
       {
-        new_node->next = cur;
         new_node->prev = NULL;
+        cur->prev = new_node;
         new_node->person = copy_person(new_pers);
         return new_node;
       }

@@ -99,7 +99,7 @@ PersonList *delete_person(PersonList *head, char *surname)
       return create_empty_person_list();
     }
     last->next = head->next;
-    head->prev = last;
+    head->next->prev = last;
     PersonList *for_ret = head->next;
     free(head);
     return for_ret;
@@ -109,8 +109,8 @@ PersonList *delete_person(PersonList *head, char *surname)
   {
     if (strcmp(cur->person->surname, surname) == 0)
     {
-      prev->next = cur->next;
-      cur->prev = prev;
+      cur->prev->next = cur->next;
+      cur->next->prev = cur->prev;
       free(cur);
       return head;
     }
@@ -302,8 +302,8 @@ CityList *delete_city(CityList *head, char *name)
   {
     if (strcmp(cur->city->name, name) == 0)
     {
-      prev->next = cur->next;
-      cur->next->prev = prev;
+      cur->prev->next = cur->next;
+      cur->next->prev = cur->prev;
       free(cur);
       return head;
     }
