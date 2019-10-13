@@ -3,7 +3,7 @@
 int main()
 {
   int choice = 10;
-  SLList *person_list = create_empty_person_list();
+  PersonList *person_list = create_empty_person_list();
   CityList *city_list = create_empty_city_list();
   while (choice)
   {

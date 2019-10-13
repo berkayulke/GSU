@@ -19,11 +19,11 @@ typedef struct person
   char *homeNumber;
 } Person;
 
-typedef struct SLList
+typedef struct PersonList
 {
   Person *person;
-  struct SLList *next;
-} SLList;
+  struct PersonList *next;
+} PersonList;
 
 typedef struct CityList
 {
@@ -32,14 +32,14 @@ typedef struct CityList
 } CityList;
 
 //For person list
-SLList *create_empty_person_list();
+PersonList *create_empty_person_list();
 Person *create_person(char *name, char *surname, char *city, char *homeNumber);
 Person *copy_person(Person *source);
-SLList *add_person(SLList *head, Person *new_pers);
-void search_person(SLList *head, char *surname, CityList *city_list);
-SLList *delete_person(SLList *head, char *surname);
+PersonList *add_person(PersonList *head, Person *new_pers);
+void search_person(PersonList *head, char *surname, CityList *city_list);
+PersonList *delete_person(PersonList *head, char *surname);
 void print_person(Person *person, CityList *city_list);
-void print_person_list(SLList *head, CityList *city_list);
+void print_person_list(PersonList *head, CityList *city_list);
 
 //For city list
 CityList *create_empty_city_list();
@@ -52,7 +52,7 @@ void print_city(City *city);
 void print_city_list(CityList *head);
 
 //For menu
-void get_person(SLList **head);
+void get_person(PersonList **head);
 void get_city(CityList **head);
 
 #endif
