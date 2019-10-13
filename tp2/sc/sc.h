@@ -40,6 +40,8 @@ void search_person(SLList *head, char *surname, CityList *city_list);
 SLList *delete_person(SLList *head, char *surname);
 void print_person(Person *person, CityList *city_list);
 void print_person_list(SLList *head, CityList *city_list);
+SLList *get_last_person(SLList *head);
+SLList *add_person_before(SLList *head, Person *new_pers);
 
 //For city list
 CityList *create_empty_city_list();

@@ -29,13 +29,13 @@ int main()
       char surname_of_person[128];
       printf("surname_of_person:\n ");
       scanf("%s", &surname_of_person);
-      delete_person(person_list, surname_of_person);
+      person_list = delete_person(person_list, surname_of_person);
       break;
     case 4:;
       char name_of_city[128];
       printf("name_of_city:\n ");
       scanf("%s", &name_of_city);
-      delete_city(city_list, name_of_city);
+      city_list = delete_city(city_list, name_of_city);
       break;
     case 5:;
       char search_by_surname[128];

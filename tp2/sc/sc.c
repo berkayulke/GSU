@@ -32,7 +32,7 @@ Person *copy_person(Person *source)
   return target;
 }
 
-SLList *get_last(SLList *head)
+SLList *get_last_person(SLList *head)
 {
   SLList *cur = head;
   while (cur->next != head)
@@ -40,10 +40,10 @@ SLList *get_last(SLList *head)
   return cur;
 }
 
-SLList *add_before(SLList *head, Person *new_pers)
+SLList *add_person_before(SLList *head, Person *new_pers)
 {
   SLList *new_node = create_empty_person_list();
-  get_last(head)->next = new_node;
+  get_last_person(head)->next = new_node;
   new_node->person = copy_person(new_pers);
   new_node->next = head;
   return new_node;
@@ -61,7 +61,7 @@ SLList *add_person(SLList *head, Person *new_pers)
   //tek elemanlıysa
   else if (head->next == head)
   {
-    add_before(head, new_pers);
+    add_person_before(head, new_pers);
     if (strcmp(head->person->surname, new_pers->surname) >= 0)
       return head->next;
     else
@@ -70,43 +70,48 @@ SLList *add_person(SLList *head, Person *new_pers)
   SLList *prev = head;
   SLList *cur = head->next;
   if (strcmp(head->person->surname, new_pers->surname) >= 0)
-  {
-    return add_before(head, new_pers);
-  }
+    return add_person_before(head, new_pers);
+
   while (cur != head)
   {
     if (strcmp(cur->person->surname, new_pers->surname) >= 0)
     {
-      add_before(cur, new_pers);
+      add_person_before(cur, new_pers);
       return head;
     }
     prev = cur;
     cur = cur->next;
   }
-  add_before(head, new_pers);
+  add_person_before(head, new_pers);
   return head;
 }
 
 SLList *delete_person(SLList *head, char *surname)
 {
-  SLList *cur = head;
-  SLList *prev = NULL;
+  SLList *cur = head->next;
+  SLList *prev = head;
+  SLList *last = get_last_person(head);
+  if (strcmp(head->person->surname, surname) == 0)
+  {
+    if (head->next == head)
+    {
+      free(head);
+      return create_empty_person_list();
+    }
+    last->next = head->next;
+    SLList *for_ret = head->next;
+    free(head);
+    return for_ret;
+  }
 
-  while (cur)
+  while (cur != head)
   {
     if (strcmp(cur->person->surname, surname) == 0)
     {
-      if (!prev)
-      {
-        SLList *for_return = head->next;
-        free(head);
-        return for_return;
-      }
       prev->next = cur->next;
       free(cur);
       return head;
     }
-    prev = cur;
     cur = cur->next;
   }
   printf("Couldn't find it\n");
@@ -136,7 +141,7 @@ void print_person_list(SLList *head, CityList *city_list)
 {
   printf("-------------------\n");
   SLList *cur = head;
-  SLList *last = get_last(head);
+  SLList *last = get_last_person(head);
 
   while (cur->person)
   {
@@ -145,16 +150,19 @@ void print_person_list(SLList *head, CityList *city_list)
     print_person(cur->person, city_list);
     cur = cur->next;
   }
-  print_person(cur->person, city_list);
+  if (cur->person)
+    print_person(cur->person, city_list);
 }
 
 void search_person(SLList *head, char *surname, CityList *city_list)
 {
   SLList *cur = head;
-  SLList *prev = NULL;
+  SLList *last = get_last_person(head);
 
   while (cur)
   {
+    if (cur == last)
+      break;
     if (strcmp(cur->person->surname, surname) == 0)
     {
       printf("-------------------\n");
@@ -162,8 +170,14 @@ void search_person(SLList *head, char *surname, CityList *city_list)
       print_person(cur->person, city_list);
       return;
     }
-    prev = cur;
     cur = cur->next;
+  }
+  if (strcmp(cur->person->surname, surname) == 0)
+  {
+    printf("-------------------\n");
+    printf("person is: \n");
+    print_person(cur->person, city_list);
+    return;
   }
   printf("Couldn't find it \n");
 }
@@ -171,7 +185,7 @@ void search_person(SLList *head, char *surname, CityList *city_list)
 CityList *create_empty_city_list()
 {
   CityList *head = malloc(sizeof(CityList));
-  head->next = NULL;
+  head->next = head;
   head->city = NULL;
   return head;
 }
@@ -191,39 +205,57 @@ City *copy_city(City *source)
   return new_city;
 }
 
+CityList *get_last_city(CityList *head)
+{
+  CityList *cur = head;
+  while (cur->next != head)
+    cur = cur->next;
+  return cur;
+}
+
+CityList *add_city_before(CityList *head, City *new_city)
+{
+  CityList *new_node = create_empty_city_list();
+  get_last_city(head)->next = new_node;
+  new_node->city = copy_city(new_city);
+  new_node->next = head;
+  return new_node;
+}
+
 CityList *add_city(CityList *head, City *new_city)
 {
   if (!head->city)
   {
     head->city = copy_city(new_city);
-    head->next = NULL;
+    head->next = head;
     return head;
   }
-  CityList *cur = head;
-  CityList *prev = NULL;
-  while (cur)
+  //tek elemanlıysa
+  else if (head->next == head)
+  {
+    add_city_before(head, new_city);
+    if (strcmp(head->city->name, new_city->name) >= 0)
+      return head->next;
+    else
+      return head;
+  }
+  CityList *prev = head;
+  CityList *cur = head->next;
+
+  if (strcmp(head->city->name, new_city->name) >= 0)
+    return add_city_before(head, new_city);
+
+  while (cur != head)
   {
     if (strcmp(cur->city->name, new_city->name) >= 0)
     {
-      CityList *new_node = create_empty_city_list();
-      new_node->next = cur;
-      if (prev)
-      {
-        prev->next = new_node;
-        new_node->city = copy_city(new_city);
-        return head;
-      }
-
-      new_node->next = head;
-      new_node->city = copy_city(new_city);
-      return new_node;
+      add_city_before(cur, new_city);
+      return head;
     }
-
     prev = cur;
     cur = cur->next;
   }
-  prev->next = create_empty_city_list();
-  prev->next->city = copy_city(new_city);
+  add_city_before(head, new_city);
   return head;
 }
 
@@ -232,40 +264,49 @@ City *search_city(CityList *head, char *name)
   if (!head || !name)
     return NULL;
   CityList *cur = head;
-  CityList *prev = NULL;
+  CityList *last = get_last_city(head);
 
   while (cur)
   {
+    if (cur == last)
+      break;
     if (strcmp(cur->city->name, name) == 0)
-    {
       return cur->city;
-    }
-    prev = cur;
+
     cur = cur->next;
   }
+  if (strcmp(cur->city->name, name) == 0)
+    return cur->city;
   return NULL;
 }
 
 CityList *delete_city(CityList *head, char *name)
 {
-  CityList *cur = head;
-  CityList *prev = NULL;
+  CityList *cur = head->next;
+  CityList *prev = head;
+  CityList *last = get_last_city(head);
 
-  while (cur)
+  if (strcmp(head->city->name, name) == 0)
+  {
+    if (head->next == head)
+    {
+      free(head);
+      return create_empty_city_list();
+    }
+    last->next = head->next;
+    CityList *for_ret = head->next;
+    free(head);
+    return for_ret;
+  }
+
+  while (cur != head)
   {
     if (strcmp(cur->city->name, name) == 0)
     {
-      if (!prev)
-      {
-        CityList *for_return = head->next;
-        free(head);
-        return for_return;
-      }
       prev->next = cur->next;
       free(cur);
       return head;
     }
-    prev = cur;
     cur = cur->next;
   }
   printf("Couldn't find it\n");
@@ -288,11 +329,17 @@ void print_city_list(CityList *head)
 {
   printf("-------------------\n");
   CityList *cur = head;
-  while (cur)
+  CityList *last = get_last_city(head);
+
+  while (cur->city)
   {
+    if (cur == last)
+      break;
     print_city(cur->city);
     cur = cur->next;
   }
+  if (cur->city)
+    print_city(cur->city);
 }
 
 void get_person(SLList **head)

@@ -121,7 +121,8 @@ void print_person_list(SLList *head, CityList *city_list)
   SLList *cur = head;
   while (cur->person)
   {
-    print_person(cur->person, city_list);
+    if (cur->person)
+      print_person(cur->person, city_list);
     cur = cur->next;
   }
 }
