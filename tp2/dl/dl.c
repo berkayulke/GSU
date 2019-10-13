@@ -43,7 +43,8 @@ SLList *add_person(SLList *head, Person *new_pers)
     return head;
   }
   SLList *cur = head;
-  while (cur->next)
+  SLList *prev = head->prev;
+  while (cur)
   {
     if (strcmp(cur->person->surname, new_pers->surname) >= 0)
     {
@@ -57,17 +58,18 @@ SLList *add_person(SLList *head, Person *new_pers)
       }
       else
       {
-        new_node->next = head;
+        new_node->next = cur;
         new_node->prev = NULL;
         new_node->person = copy_person(new_pers);
         return new_node;
       }
     }
+    prev = cur;
     cur = cur->next;
   }
-  cur->next = create_empty_person_list();
-  cur->next->person = copy_person(new_pers);
-  cur->next->prev = cur;
+  prev->next = create_empty_person_list();
+  prev->next->person = copy_person(new_pers);
+  prev->next->prev = prev;
   return head;
 }
 
