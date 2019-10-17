@@ -78,7 +78,11 @@ void print_list(List *head, int space_between, int start_space)
 Tree *insert_node(Tree *head, Tree *new)
 {
   if (!head->code)
+  {
     head->code = new->code;
+    head->name = strdup(new->name);
+    return head;
+  }
 
   else if (new->code <= head->code)
   {
@@ -189,9 +193,11 @@ Tree *delete_node(Tree *head, int value)
         Tree *max = find_max(cur->left);
         Tree *prev = get_prev(head, max->code);
         cur->code = max->code;
+        cur->name = strdup(max->name);
         free(max);
-        if(cur==prev){
-          prev->left = NULL; 
+        if (cur == prev)
+        {
+          prev->left = NULL;
           return head;
         }
         prev->right = NULL;
@@ -203,9 +209,11 @@ Tree *delete_node(Tree *head, int value)
         Tree *min = find_min(cur->right);
         Tree *prev = get_prev(head, min->code);
         cur->code = min->code;
+        cur->name = strdup(min->name);
         free(min);
-        if(cur==prev){
-          prev->right = NULL; 
+        if (cur == prev)
+        {
+          prev->right = NULL;
           return head;
         }
         prev->left = NULL;
@@ -325,27 +333,17 @@ void print_tree(Tree *head, int order)
   }
 }
 
-int main(int argc, char const *argv[])
+Tree *search_node(Tree *head, int value)
 {
-  Tree *tree_head = create_node(51, "TR");
-
-  tree_head = insert_node(tree_head, create_node(81, "FR"));
-  tree_head = insert_node(tree_head, create_node(61, "US"));
-  tree_head = insert_node(tree_head, create_node(71, "NE"));
-  tree_head = insert_node(tree_head, create_node(31, "EN"));
-  tree_head = insert_node(tree_head, create_node(41, "SP"));
-  tree_head = insert_node(tree_head, create_node(40, "SP"));
-  tree_head = insert_node(tree_head, create_node(42, "SP"));
-  tree_head = insert_node(tree_head, create_node(21, "IT"));
-  tree_head = insert_node(tree_head, create_node(22, "IT"));
-  tree_head = insert_node(tree_head, create_node(11, "GR"));
-  tree_head = insert_node(tree_head, create_node(91, "SW"));
-  tree_head = insert_node(tree_head, create_node(92, "SW"));
-  tree_head = insert_node(tree_head, create_node(90, "SW"));
-
-  print_tree(tree_head, LEVEL);
-  //21 sorunlu
-  tree_head = delete_node(tree_head, 91);
-  print_tree(tree_head, LEVEL);
-  return 0;
+  Tree *cur = head;
+  while (cur)
+  {
+    if (value == cur->code)
+      break;
+    else if (value < cur->code)
+      cur = cur->left;
+    else
+      cur = cur->right;
+  }
+  return cur;
 }
