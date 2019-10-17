@@ -7,6 +7,14 @@ int max(int n1, int n2)
   return n2;
 }
 
+int power(int base, int pow)
+{
+  int res = 1;
+  for (int i = 0; i < pow; i++)
+    res *= base;
+  return res;
+}
+
 List *get_last(List *head)
 {
   if (!head->next)
@@ -21,48 +29,47 @@ List *get_last(List *head)
   return prev;
 }
 
-List *push(List *head, int new_num)
+List *push(List *head, int new_num, char *new_name)
 {
   if (!head->code)
   {
     head->code = new_num;
+    head->name = strdup(new_name);
     return head;
   }
   List *last = get_last(head);
   List *new_node = malloc(sizeof(List));
   new_node->next = NULL;
   new_node->code = new_num;
+  new_node->name = strdup(new_name);
   last->next = new_node;
   return head;
 }
 
-int *to_array(List *head)
-{
-  int lenght = 0;
-  int *ar2 = malloc(sizeof(int));
-
-  int *ar = malloc(lenght * sizeof(int));
-  List *cur = head;
-  for (int i = 0; i < lenght; i++)
-  {
-    ar[i] = cur->code;
-    cur = cur->next;
-  }
-  return ar;
-}
-
-void print_list(List *head, int space_count)
+void print_list(List *head, int space_between, int start_space)
 {
   List *cur = head;
+  for (int i = 0; i < start_space; i++)
+    printf(" ");
+
   while (cur)
   {
-    if (cur->code)
-      printf("%i", cur->code);
-    else
-      printf("000");
-    for (int i = 0; i < max(space_count, 1); i++)
+    printf("%03d", cur->code);
+    for (int i = 0; i < max(space_between, 1); i++)
       printf(" ");
-
+    cur = cur->next;
+  }
+  printf("\n");
+  for (int i = 0; i < start_space; i++)
+    printf(" ");
+  cur = head;
+  while (cur)
+  {
+    if (cur->name)
+      printf("%s ", cur->name);
+      else printf("   ");
+    for (int i = 0; i < max(space_between, 1); i++)
+      printf(" ");
     cur = cur->next;
   }
 }
@@ -94,13 +101,13 @@ Tree *insert_node(Tree *head, Tree *new)
   return head;
 }
 
-Tree *create_node(int code, char *name, Tree *left, Tree *right)
+Tree *create_node(int code, char *name)
 {
   Tree *node = malloc(sizeof(Tree));
   node->code = code;
   node->name = strdup(name);
-  node->left = left;
-  node->right = right;
+  node->left = NULL;
+  node->right = NULL;
   return node;
 }
 
@@ -147,6 +154,7 @@ int find_height(Tree *head)
     return 0;
 }
 
+//TO DO - SHOULD BE TESTED
 Tree *delete_node(Tree *head, int value)
 {
   return NULL;
@@ -159,9 +167,15 @@ List *get_level(Tree *head, int level)
     List *list_head = malloc(sizeof(List));
     list_head->next = NULL;
     if (head)
+    {
       list_head->code = head->code;
+      list_head->name = strdup(head->name);
+    }
     else
+    {
       list_head->code = 0;
+      list_head->name = NULL;
+    }
     return list_head;
   }
   else
@@ -174,15 +188,6 @@ List *get_level(Tree *head, int level)
   }
 }
 
-int power(int base, int pow)
-{
-  int res = 1;
-  for (int i = 0; i < pow; i++)
-    res *= base;
-  return res;
-}
-
-
 /*
                                                                      bastan     arada
                               111                                    30(2^5-2)
@@ -191,39 +196,70 @@ int power(int base, int pow)
   111     222     333     444     555     666     777     888        2 (2^2-2)    05
 111 222 333 444 555 666 777 888 000 111 222 333 444 555 666 777      0            01
   */
-void print_tree(Tree* tree_head)
+void amazingly_print_tree(Tree *tree_head)
 {
-    int height = find_height(tree_head) + 1;
-
+  int height = find_height(tree_head) + 1;
+  int i = 1;
   for (int i = 0; i < height; i++)
   {
     int start_space = power(2, height - i + 1) - 2;
-    int space_between = 2 * start_space +1;
-    for (int j = 0; j < start_space; j++)
-      printf(" ");
-    print_list(get_level(tree_head, i), space_between);
+    int space_between = 2 * start_space + 1;
+    print_list(get_level(tree_head, i), space_between, start_space);
     printf("\n");
+  }
+}
+
+void print_tree(Tree *head, int order)
+{
+  switch (order)
+  {
+  case PRE:
+    if (head)
+    {
+      printf("%i %s\n", head->code, head->name);
+      print_tree(head->left, order);
+      print_tree(head->right, order);
+    }
+    break;
+  case IN:
+    if (head)
+    {
+      print_tree(head->left, order);
+      printf("%i %s\n", head->code, head->name);
+      print_tree(head->right, order);
+    }
+    break;
+  case POST:
+    if (head)
+    {
+      print_tree(head->left, order);
+      print_tree(head->right, order);
+      printf("%i %s\n", head->code, head->name);
+    }
+    break;
+  case LEVEL:
+    amazingly_print_tree(head);
+    break;
+
+  default:
+    break;
   }
 }
 
 int main(int argc, char const *argv[])
 {
-  Tree *tree_head = create_node(511, "TR", NULL, NULL);
+  Tree *tree_head = create_node(51, "TR");
 
-  tree_head = insert_node(tree_head, create_node(811, "FR", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(611, "FR", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(711, "FR", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(311, "EN", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(411, "EN", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(211, "IT", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(111, "GR", NULL, NULL));
-  tree_head = insert_node(tree_head, create_node(911, "FR", NULL, NULL));
+  tree_head = insert_node(tree_head, create_node(81, "FR"));
+  tree_head = insert_node(tree_head, create_node(61, "FR"));
+  tree_head = insert_node(tree_head, create_node(71, "FR"));
+  tree_head = insert_node(tree_head, create_node(31, "EN"));
+  tree_head = insert_node(tree_head, create_node(41, "EN"));
+  tree_head = insert_node(tree_head, create_node(21, "IT"));
+  tree_head = insert_node(tree_head, create_node(11, "GR"));
+  tree_head = insert_node(tree_head, create_node(91, "FR"));
 
-
-
-
- print_tree(tree_head);
-
-
+  print_tree(tree_head, LEVEL);
+  print_tree(tree_head, IN);
   return 0;
 }
