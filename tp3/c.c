@@ -189,17 +189,26 @@ Tree *delete_node(Tree *head, int value)
         Tree *max = find_max(cur->left);
         Tree *prev = get_prev(head, max->code);
         cur->code = max->code;
-        prev->left = NULL;
         free(max);
+        if(cur==prev){
+          prev->left = NULL; 
+          return head;
+        }
+        prev->right = NULL;
         return head;
       }
       if (cur->right)
       {
-        Tree *min = find_max(cur->right);
+
+        Tree *min = find_min(cur->right);
         Tree *prev = get_prev(head, min->code);
         cur->code = min->code;
-        prev->right = NULL;
         free(min);
+        if(cur==prev){
+          prev->right = NULL; 
+          return head;
+        }
+        prev->left = NULL;
         return head;
       }
       if (!cur->right && !cur->left)
@@ -325,14 +334,18 @@ int main(int argc, char const *argv[])
   tree_head = insert_node(tree_head, create_node(71, "NE"));
   tree_head = insert_node(tree_head, create_node(31, "EN"));
   tree_head = insert_node(tree_head, create_node(41, "SP"));
+  tree_head = insert_node(tree_head, create_node(40, "SP"));
+  tree_head = insert_node(tree_head, create_node(42, "SP"));
   tree_head = insert_node(tree_head, create_node(21, "IT"));
   tree_head = insert_node(tree_head, create_node(22, "IT"));
   tree_head = insert_node(tree_head, create_node(11, "GR"));
   tree_head = insert_node(tree_head, create_node(91, "SW"));
+  tree_head = insert_node(tree_head, create_node(92, "SW"));
   tree_head = insert_node(tree_head, create_node(90, "SW"));
 
   print_tree(tree_head, LEVEL);
-  tree_head = delete_node(tree_head, 41);
+  //21 sorunlu
+  tree_head = delete_node(tree_head, 91);
   print_tree(tree_head, LEVEL);
   return 0;
 }
