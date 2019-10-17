@@ -67,7 +67,8 @@ void print_list(List *head, int space_between, int start_space)
   {
     if (cur->name)
       printf("%s ", cur->name);
-      else printf("   ");
+    else
+      printf("   ");
     for (int i = 0; i < max(space_between, 1); i++)
       printf(" ");
     cur = cur->next;
@@ -154,10 +155,60 @@ int find_height(Tree *head)
     return 0;
 }
 
+Tree *get_prev(Tree *head, int value)
+{
+  Tree *temp = head;
+  Tree *prev = NULL;
+  while (temp)
+  {
+    if (temp->code == value)
+      return prev;
+    prev = temp;
+    if (temp->left && value < temp->code)
+      temp = temp->left;
+    else if (temp->right && value > temp->code)
+      temp = temp->right;
+    else
+      return NULL;
+  }
+  return NULL;
+}
+
 //TO DO - SHOULD BE TESTED
+//ya sağın max'ını ya da solun minini getir
 Tree *delete_node(Tree *head, int value)
 {
-  return NULL;
+  Tree *cur = head;
+
+  while (cur)
+  {
+    if (cur->code == value)
+    {
+      if (cur->left)
+      {
+        Tree *max = find_max(cur->left);
+        Tree *prev = get_prev(head, max->code);
+        cur->code = max->code;
+        prev->right = NULL;
+        free(max);
+      }
+      else if (cur->right)
+      {
+        Tree *min = find_max(cur->right);
+        Tree *prev = get_prev(head, min->code);
+        cur->code = min->code;
+        prev->left = NULL;
+        free(min);
+      }
+    }
+
+    //keep going
+    if (value < cur->code)
+      cur = cur->left;
+    else
+      cur = cur->left;
+  }
+  return head;
 }
 
 List *get_level(Tree *head, int level)
@@ -251,15 +302,17 @@ int main(int argc, char const *argv[])
   Tree *tree_head = create_node(51, "TR");
 
   tree_head = insert_node(tree_head, create_node(81, "FR"));
-  tree_head = insert_node(tree_head, create_node(61, "FR"));
-  tree_head = insert_node(tree_head, create_node(71, "FR"));
+  tree_head = insert_node(tree_head, create_node(61, "US"));
+  tree_head = insert_node(tree_head, create_node(71, "NE"));
   tree_head = insert_node(tree_head, create_node(31, "EN"));
-  tree_head = insert_node(tree_head, create_node(41, "EN"));
+  tree_head = insert_node(tree_head, create_node(41, "SP"));
   tree_head = insert_node(tree_head, create_node(21, "IT"));
+  tree_head = insert_node(tree_head, create_node(22, "IT"));
   tree_head = insert_node(tree_head, create_node(11, "GR"));
-  tree_head = insert_node(tree_head, create_node(91, "FR"));
+  tree_head = insert_node(tree_head, create_node(91, "SW"));
 
   print_tree(tree_head, LEVEL);
-  print_tree(tree_head, IN);
+  tree_head = delete_node(tree_head, 31);
+  print_tree(tree_head, LEVEL);
   return 0;
 }
