@@ -189,16 +189,28 @@ Tree *delete_node(Tree *head, int value)
         Tree *max = find_max(cur->left);
         Tree *prev = get_prev(head, max->code);
         cur->code = max->code;
-        prev->right = NULL;
+        prev->left = NULL;
         free(max);
+        return head;
       }
-      else if (cur->right)
+      if (cur->right)
       {
         Tree *min = find_max(cur->right);
         Tree *prev = get_prev(head, min->code);
         cur->code = min->code;
-        prev->left = NULL;
+        prev->right = NULL;
         free(min);
+        return head;
+      }
+      if (!cur->right && !cur->left)
+      {
+        Tree *prev = get_prev(head, cur->code);
+        if (cur->code < prev->code)
+          prev->left = NULL;
+        else
+          prev->right = NULL;
+        free(cur);
+        return head;
       }
     }
 
@@ -206,13 +218,20 @@ Tree *delete_node(Tree *head, int value)
     if (value < cur->code)
       cur = cur->left;
     else
-      cur = cur->left;
+      cur = cur->right;
   }
   return head;
 }
 
 List *get_level(Tree *head, int level)
 {
+  if (!head)
+  {
+    List *list_head = malloc(sizeof(List));
+    list_head->code = 0;
+    list_head->name = NULL;
+    return list_head;
+  }
   if (level == 0)
   {
     List *list_head = malloc(sizeof(List));
@@ -310,9 +329,10 @@ int main(int argc, char const *argv[])
   tree_head = insert_node(tree_head, create_node(22, "IT"));
   tree_head = insert_node(tree_head, create_node(11, "GR"));
   tree_head = insert_node(tree_head, create_node(91, "SW"));
+  tree_head = insert_node(tree_head, create_node(90, "SW"));
 
   print_tree(tree_head, LEVEL);
-  tree_head = delete_node(tree_head, 31);
+  tree_head = delete_node(tree_head, 41);
   print_tree(tree_head, LEVEL);
   return 0;
 }
