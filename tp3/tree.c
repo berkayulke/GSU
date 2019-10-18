@@ -178,8 +178,6 @@ Tree *get_prev(Tree *head, int value)
   return NULL;
 }
 
-//TO DO - SHOULD BE TESTED
-//ya sağın max'ını ya da solun minini getir
 Tree *delete_node(Tree *head, int value)
 {
   Tree *cur = head;
@@ -247,6 +245,15 @@ List *get_level(Tree *head, int level)
     List *list_head = malloc(sizeof(List));
     list_head->code = 0;
     list_head->name = NULL;
+    List *cur = list_head;
+    for (int i = 0; i < power(2, level) - 1; i++)
+    {
+      cur->next = malloc(sizeof(List));
+      cur->next->code = 0;
+      cur->next->name = NULL;
+      cur = cur->next;
+    }
+    cur->next = NULL;
     return list_head;
   }
   if (level == 0)
