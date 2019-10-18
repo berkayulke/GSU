@@ -61,6 +61,8 @@ Tree *left_rotate_avl(Tree *head);
 Tree *right_rotate_avl(Tree *head);
 Tree *balance_tree(Tree *head);
 Tree *insert_avl(Tree *head, Tree *new);
+Tree *delete_avl(Tree *head, int value);
 int get_balance_fac(Tree *head);
+int is_balanced(Tree *head);
 
 #endif

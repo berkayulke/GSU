@@ -2,18 +2,23 @@
 int main(int argc, char const *argv[])
 {
   Tree *tree_head = create_node(0, "");
-
+  int c = 1;
   for (int i = 1; i < 6; i++)
   {
     tree_head = insert_avl(tree_head, create_node(i * 10, "SW"));
+    c *= -1;
   }
+  tree_head = insert_avl(tree_head, create_node(25, "SW"));
 
   print_tree(tree_head, LEVEL);
-  //print_tree(tree_head, LEVEL);
+  tree_head = delete_node(tree_head, 40);
+  print_tree(tree_head, LEVEL);
+  tree_head = delete_avl(tree_head, 20);
+  print_tree(tree_head, LEVEL);
+  tree_head = delete_avl(tree_head, 25);
+  print_tree(tree_head, LEVEL);
+
   int input = 1;
-  //printf("head->b_fac = %i Calculated=%i\n", tree_head->b_fac, get_balance_fac(tree_head));
-  printf("left_height = %i\n", find_height(tree_head->left));
-  printf("right_height = %i\n", find_height(tree_head->right));
   while (!input)
   {
     printf("1 - Add new country\n");

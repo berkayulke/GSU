@@ -140,7 +140,7 @@ Tree *insert_node(Tree *head, Tree *new)
       head->right = new;
     head->b_fac = max(head->b_fac++, D_RIGHT);
   }
-
+  head->b_fac = get_balance_fac(head);
   return head;
 }
 
@@ -187,6 +187,8 @@ Tree *find_max(Tree *head)
 
 int find_height(Tree *head)
 {
+  if (!head)
+    return -1;
   Tree *cur = head;
   if (cur->left && cur->right)
     return 1 + max(find_height(cur->left), find_height(cur->right));
@@ -403,16 +405,8 @@ int get_balance_fac(Tree *head)
 {
   if (!head)
     return EQ;
-  if (head->left)
-    if (head->right)
-      return EQ - find_height(head->left) + find_height(head->right);
-    //return abs(find_height(head->left) - find_height(head->right)) + EQ;
-    else
-      return EQ - find_height(head->left) - 1;
-  else if (head->right)
-    return EQ - find_height(head->right) - 1;
   else
-    return EQ;
+    return EQ - find_height(head->left) + find_height(head->right);
 }
 
 Tree *left_rotate_avl(Tree *head)
@@ -483,4 +477,21 @@ Tree *insert_avl(Tree *head, Tree *new)
   head = insert_node(head, new);
   head = balance_tree(head);
   return head;
+}
+
+Tree *delete_avl(Tree *head, int value)
+{
+  head = delete_node(head, value);
+  head = balance_tree(head);
+  return head;
+}
+
+int is_balanced(Tree *head)
+{
+  if (!head)
+    return 1;
+  if (head->b_fac == D_LEFT || head->b_fac == D_RIGHT)
+    return 0;
+  else
+    return min(is_balanced(head->right), is_balanced(head->left));
 }
