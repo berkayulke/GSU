@@ -35,23 +35,6 @@ List *get_last(List *head)
   return prev;
 }
 
-List *push(List *head, int new_num, char *new_name)
-{
-  if (!head->code)
-  {
-    head->code = new_num;
-    head->name = strdup(new_name);
-    return head;
-  }
-  List *last = get_last(head);
-  List *new_node = malloc(sizeof(List));
-  new_node->next = NULL;
-  new_node->code = new_num;
-  new_node->name = strdup(new_name);
-  last->next = new_node;
-  return head;
-}
-
 void print_list(List *head, int space_between, int start_space)
 {
   List *cur = head;
@@ -327,14 +310,6 @@ List *get_level(Tree *head, int level)
   }
 }
 
-/*
-                                                                     bastan     arada
-                              111                                    30(2^5-2)
-              111                             222                    14(2^4-2)    29
-      111             222             333             444            6 (2^3-2)    13
-  111     222     333     444     555     666     777     888        2 (2^2-2)    05
-111 222 333 444 555 666 777 888 000 111 222 333 444 555 666 777      0            01
-  */
 void amazingly_print_tree(Tree *tree_head)
 {
   int height = find_height(tree_head) + 1;

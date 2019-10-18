@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
   print_tree(tree_head, LEVEL);
 
   int input = 1;
-  while (!input)
+  while (input)
   {
     printf("1 - Add new country\n");
     printf("2 - List all countries\n");
