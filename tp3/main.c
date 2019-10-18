@@ -2,20 +2,7 @@
 int main(int argc, char const *argv[])
 {
   Tree *tree_head = create_node(0, "");
-  /*
-  tree_head = insert_node(tree_head, create_node(81, "FR"));
-  tree_head = insert_node(tree_head, create_node(61, "US"));
-  tree_head = insert_node(tree_head, create_node(71, "NE"));
-  tree_head = insert_node(tree_head, create_node(31, "EN"));
-  tree_head = insert_node(tree_head, create_node(41, "SP"));
-  tree_head = insert_node(tree_head, create_node(40, "SP"));
-  tree_head = insert_node(tree_head, create_node(42, "SP"));
-  tree_head = insert_node(tree_head, create_node(21, "IT"));
-  tree_head = insert_node(tree_head, create_node(22, "IT"));
-  tree_head = insert_node(tree_head, create_node(11, "GR"));
-  tree_head = insert_node(tree_head, create_node(91, "SW"));
-  tree_head = insert_node(tree_head, create_node(90, "SW"));
-*/
+
   tree_head = insert_node(tree_head, create_node(10, "SW"));
   tree_head = insert_node(tree_head, create_node(20, "SW"));
   tree_head = insert_node(tree_head, create_node(30, "SW"));
@@ -24,7 +11,11 @@ int main(int argc, char const *argv[])
   tree_head = insert_node(tree_head, create_node(25, "SW"));
 
   print_tree(tree_head, LEVEL);
-  tree_head = delete_node(tree_head, 51);
+  tree_head = delete_node(tree_head, 40);
+  print_tree(tree_head, LEVEL);
+  tree_head = delete_node(tree_head, 20);
+  print_tree(tree_head, LEVEL);
+  tree_head = delete_node(tree_head, 25);
   print_tree(tree_head, LEVEL);
 
   int input = 1;

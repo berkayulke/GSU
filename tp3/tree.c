@@ -192,10 +192,10 @@ Tree *delete_node(Tree *head, int value)
         Tree *prev = get_prev(head, max->code);
         cur->code = max->code;
         cur->name = strdup(max->name);
-        free(max);
         if (cur == prev)
         {
-          prev->left = NULL;
+          prev->left = max->left;
+          free(max);
           return head;
         }
         prev->right = NULL;
@@ -203,15 +203,15 @@ Tree *delete_node(Tree *head, int value)
       }
       if (cur->right)
       {
-
-        Tree *min = find_min(cur->right);
-        Tree *prev = get_prev(head, min->code);
+        //cur -> 25
+        Tree *min = find_min(cur->right);       //30
+        Tree *prev = get_prev(head, min->code); //25
         cur->code = min->code;
         cur->name = strdup(min->name);
-        free(min);
         if (cur == prev)
         {
-          prev->right = NULL;
+          prev->right = min->right;
+          free(min);
           return head;
         }
         prev->left = NULL;
