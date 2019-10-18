@@ -6,6 +6,12 @@ int max(int n1, int n2)
     return n1;
   return n2;
 }
+int min(int n1, int n2)
+{
+  if (n1 < n2)
+    return n1;
+  return n2;
+}
 
 int power(int base, int pow)
 {
@@ -59,6 +65,7 @@ void print_list(List *head, int space_between, int start_space)
       printf(" ");
     cur = cur->next;
   }
+
   printf("\n");
   for (int i = 0; i < start_space; i++)
     printf(" ");
@@ -68,7 +75,39 @@ void print_list(List *head, int space_between, int start_space)
     if (cur->name)
       printf("%s ", cur->name);
     else
+      printf("___");
+    for (int i = 0; i < max(space_between, 1); i++)
+      printf(" ");
+    cur = cur->next;
+  }
+
+  printf("\n");
+  for (int i = 0; i < start_space; i++)
+    printf(" ");
+  cur = head;
+  while (cur)
+  {
+    switch (cur->b_fac)
+    {
+    case D_LEFT:
+      printf("DLF");
+      break;
+    case LEFT:
+      printf("LFT");
+      break;
+    case EQ:
+      printf("EQL");
+      break;
+    case RIGHT:
+      printf("RGT");
+      break;
+    case D_RIGHT:
+      printf("DRT");
+      break;
+    default:
       printf("   ");
+      break;
+    }
     for (int i = 0; i < max(space_between, 1); i++)
       printf(" ");
     cur = cur->next;
@@ -89,18 +128,17 @@ Tree *insert_node(Tree *head, Tree *new)
     if (head->left)
       head->left = insert_node(head->left, new);
     else
-    {
       head->left = new;
-    }
+    head->b_fac--;
   }
   else
   {
+
     if (head->right)
       head->right = insert_node(head->right, new);
     else
-    {
       head->right = new;
-    }
+    head->b_fac = max(head->b_fac++, D_RIGHT);
   }
 
   return head;
@@ -113,6 +151,7 @@ Tree *create_node(int code, char *name)
   node->name = strdup(name);
   node->left = NULL;
   node->right = NULL;
+  node->b_fac = EQ;
   return node;
 }
 
@@ -151,9 +190,9 @@ int find_height(Tree *head)
   Tree *cur = head;
   if (cur->left && cur->right)
     return 1 + max(find_height(cur->left), find_height(cur->right));
-  if (cur->right)
+  if (cur->right && !cur->left)
     return 1 + find_height(cur->right);
-  else if (cur->left)
+  else if (cur->left && !cur->right)
     return 1 + find_height(cur->left);
   else
     return 0;
@@ -245,12 +284,14 @@ List *get_level(Tree *head, int level)
     List *list_head = malloc(sizeof(List));
     list_head->code = 0;
     list_head->name = NULL;
+    list_head->b_fac = EQ;
     List *cur = list_head;
     for (int i = 0; i < power(2, level) - 1; i++)
     {
       cur->next = malloc(sizeof(List));
       cur->next->code = 0;
       cur->next->name = NULL;
+      cur->next->b_fac = EQ;
       cur = cur->next;
     }
     cur->next = NULL;
@@ -264,11 +305,13 @@ List *get_level(Tree *head, int level)
     {
       list_head->code = head->code;
       list_head->name = strdup(head->name);
+      list_head->b_fac = head->b_fac;
     }
     else
     {
       list_head->code = 0;
       list_head->name = NULL;
+      list_head->next->b_fac = EQ;
     }
     return list_head;
   }
@@ -353,4 +396,91 @@ Tree *search_node(Tree *head, int value)
       cur = cur->right;
   }
   return cur;
+}
+
+//AVL
+int get_balance_fac(Tree *head)
+{
+  if (!head)
+    return EQ;
+  if (head->left)
+    if (head->right)
+      return EQ - find_height(head->left) + find_height(head->right);
+    //return abs(find_height(head->left) - find_height(head->right)) + EQ;
+    else
+      return EQ - find_height(head->left) - 1;
+  else if (head->right)
+    return EQ - find_height(head->right) - 1;
+  else
+    return EQ;
+}
+
+Tree *left_rotate_avl(Tree *head)
+{
+  Tree *right = head->right;
+  Tree *new_right = right->left;
+  right->left = head;
+  head->right = new_right;
+
+  right->b_fac = get_balance_fac(right);
+  if (right->left)
+    right->left->b_fac = get_balance_fac(right->left);
+  if (right->right)
+    right->right->b_fac = get_balance_fac(right->right);
+  return right;
+}
+
+Tree *right_rotate_avl(Tree *head)
+{
+  Tree *left = head->left;
+  Tree *new_left = left->right;
+  left->right = head;
+  head->left = new_left;
+
+  left->b_fac = get_balance_fac(left);
+  if (left->left)
+    left->left->b_fac = get_balance_fac(left->left);
+  if (left->right)
+    left->right->b_fac = get_balance_fac(left->right);
+  return left;
+}
+
+Tree *balance_tree(Tree *head)
+{
+  if (!head)
+    return head;
+  if (head->b_fac == D_LEFT)
+  {
+
+    if (head->left->b_fac == D_LEFT)
+      head = right_rotate_avl(head);
+    else if (head->left->right && head->left->right->b_fac == D_RIGHT)
+    {
+      head->left = left_rotate_avl(head->left);
+      head = right_rotate_avl(head);
+    }
+  }
+  else if (head->b_fac >= D_RIGHT)
+  {
+
+    if (head->right->b_fac >= D_RIGHT)
+    {
+      head = left_rotate_avl(head);
+    }
+    else if (head->right->left && head->right->left->b_fac == D_RIGHT)
+    {
+      head->right = right_rotate_avl(head->right);
+      head = left_rotate_avl(head);
+    }
+  }
+  head->left = balance_tree(head->left);
+  head->right = balance_tree(head->right);
+  return head;
+}
+
+Tree *insert_avl(Tree *head, Tree *new)
+{
+  head = insert_node(head, new);
+  head = balance_tree(head);
+  return head;
 }

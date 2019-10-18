@@ -13,11 +13,21 @@ enum print_types
   LEVEL
 };
 
+enum b_fac
+{
+  D_LEFT,
+  LEFT,
+  EQ,
+  RIGHT,
+  D_RIGHT
+};
+
 typedef struct List
 {
   int code;
   char *name;
   struct List *next;
+  int b_fac;
 } List;
 
 typedef struct Tree
@@ -26,6 +36,7 @@ typedef struct Tree
   char *name;
   struct Tree *right;
   struct Tree *left;
+  int b_fac;
 } Tree;
 
 int max(int n1, int n2);
@@ -44,6 +55,12 @@ Tree *insert_node(Tree *head, Tree *new);
 void print_tree(Tree *head, int order);
 List *get_level(Tree *head, int level);
 void amazingly_print_tree(Tree *tree_head);
-Tree* search_node(Tree* head,int value);
+Tree *search_node(Tree *head, int value);
+
+Tree *left_rotate_avl(Tree *head);
+Tree *right_rotate_avl(Tree *head);
+Tree *balance_tree(Tree *head);
+Tree *insert_avl(Tree *head, Tree *new);
+int get_balance_fac(Tree *head);
 
 #endif
