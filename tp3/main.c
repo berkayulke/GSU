@@ -2,12 +2,8 @@
 int main(int argc, char const *argv[])
 {
   Tree *tree_head = create_node(0, "");
-  int c = 1;
   for (int i = 1; i < 6; i++)
-  {
     tree_head = insert_avl(tree_head, create_node(i * 10, "SW"));
-    c *= -1;
-  }
   tree_head = insert_avl(tree_head, create_node(25, "SW"));
 
   print_tree(tree_head, LEVEL);

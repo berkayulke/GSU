@@ -23,8 +23,6 @@ int power(int base, int pow)
 
 List *get_last(List *head)
 {
-  if (!head->next)
-    return head;
   List *cur = head;
   List *prev = NULL;
   while (cur)
@@ -38,9 +36,11 @@ List *get_last(List *head)
 void print_list(List *head, int space_between, int start_space)
 {
   List *cur = head;
+  //başlangıç boşluğunu koy
   for (int i = 0; i < start_space; i++)
     printf(" ");
 
+  //sayıları bas
   while (cur)
   {
     printf("%03d", cur->code);
@@ -53,6 +53,7 @@ void print_list(List *head, int space_between, int start_space)
   for (int i = 0; i < start_space; i++)
     printf(" ");
   cur = head;
+  //ülke adını bas
   while (cur)
   {
     if (cur->name)
@@ -64,6 +65,7 @@ void print_list(List *head, int space_between, int start_space)
     cur = cur->next;
   }
 
+  //balance factor bas
   printf("\n");
   for (int i = 0; i < start_space; i++)
     printf(" ");
@@ -112,16 +114,13 @@ Tree *insert_node(Tree *head, Tree *new)
       head->left = insert_node(head->left, new);
     else
       head->left = new;
-    head->b_fac--;
   }
   else
   {
-
     if (head->right)
       head->right = insert_node(head->right, new);
     else
       head->right = new;
-    head->b_fac = max(head->b_fac++, D_RIGHT);
   }
   head->b_fac = get_balance_fac(head);
   return head;
@@ -140,9 +139,6 @@ Tree *create_node(int code, char *name)
 
 Tree *find_min(Tree *head)
 {
-  if (!head->left)
-    return head;
-
   Tree *cur = head->left;
   Tree *prev = head;
   while (cur)
@@ -155,9 +151,6 @@ Tree *find_min(Tree *head)
 
 Tree *find_max(Tree *head)
 {
-  if (!head->right)
-    return head;
-
   Tree *cur = head->right;
   Tree *prev = head;
   while (cur)
@@ -173,12 +166,8 @@ int find_height(Tree *head)
   if (!head)
     return -1;
   Tree *cur = head;
-  if (cur->left && cur->right)
+  if (cur->left || cur->right)
     return 1 + max(find_height(cur->left), find_height(cur->right));
-  if (cur->right && !cur->left)
-    return 1 + find_height(cur->right);
-  else if (cur->left && !cur->right)
-    return 1 + find_height(cur->left);
   else
     return 0;
 }
@@ -202,6 +191,7 @@ Tree *get_prev(Tree *head, int value)
   return NULL;
 }
 
+//Revize et
 Tree *delete_node(Tree *head, int value)
 {
   Tree *cur = head;
@@ -227,9 +217,8 @@ Tree *delete_node(Tree *head, int value)
       }
       if (cur->right)
       {
-        //cur -> 25
-        Tree *min = find_min(cur->right);       //30
-        Tree *prev = get_prev(head, min->code); //25
+        Tree *min = find_min(cur->right);
+        Tree *prev = get_prev(head, min->code);
         cur->code = min->code;
         cur->name = strdup(min->name);
         if (cur == prev)
@@ -264,6 +253,7 @@ Tree *delete_node(Tree *head, int value)
 
 List *get_level(Tree *head, int level)
 {
+  //boşsa bile levele uygun 0 dolu bi list döndür
   if (!head)
   {
     List *list_head = malloc(sizeof(List));
@@ -286,18 +276,10 @@ List *get_level(Tree *head, int level)
   {
     List *list_head = malloc(sizeof(List));
     list_head->next = NULL;
-    if (head)
-    {
-      list_head->code = head->code;
-      list_head->name = strdup(head->name);
-      list_head->b_fac = head->b_fac;
-    }
-    else
-    {
-      list_head->code = 0;
-      list_head->name = NULL;
-      list_head->next->b_fac = EQ;
-    }
+    list_head->code = head->code;
+    list_head->name = strdup(head->name);
+    list_head->b_fac = head->b_fac;
+
     return list_head;
   }
   else
@@ -420,7 +402,6 @@ Tree *balance_tree(Tree *head)
     return head;
   if (head->b_fac == D_LEFT)
   {
-
     if (head->left->b_fac == D_LEFT)
       head = right_rotate_avl(head);
     else if (head->left->right && head->left->right->b_fac == D_RIGHT)
@@ -442,8 +423,6 @@ Tree *balance_tree(Tree *head)
       head = left_rotate_avl(head);
     }
   }
-  head->left = balance_tree(head->left);
-  head->right = balance_tree(head->right);
   return head;
 }
 
