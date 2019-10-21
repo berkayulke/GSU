@@ -3,15 +3,15 @@ int main(int argc, char const *argv[])
 {
   Tree *tree_head = create_node(0, "");
   for (int i = 1; i < 6; i++)
-    tree_head = insert_avl(tree_head, create_node(i * 10, "SW"));
-  tree_head = insert_avl(tree_head, create_node(25, "SW"));
+    insert_avl(&tree_head, create_node(i * 10, "SW"));
+  insert_avl(&tree_head, create_node(25, "SW"));
 
   print_tree(tree_head, LEVEL);
-  tree_head = delete_node(tree_head, 40);
+  delete_avl(&tree_head, 40);
   print_tree(tree_head, LEVEL);
-  tree_head = delete_avl(tree_head, 20);
+  delete_avl(&tree_head, 20);
   print_tree(tree_head, LEVEL);
-  tree_head = delete_avl(tree_head, 25);
+  delete_avl(&tree_head, 25);
   print_tree(tree_head, LEVEL);
 
   int input = 1;
@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
       scanf("%s", country_name);
       printf("Country code \n");
       scanf("%i", &code);
-      tree_head = insert_node(tree_head, create_node(code, country_name));
+      insert_avl(&tree_head, create_node(code, country_name));
       free(country_name);
       break;
     case 2:
@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
       printf("Enter country code: \n");
       int country_code;
       scanf("%i", &country_code);
-      tree_head = delete_node(tree_head, country_code);
+      delete_avl(&tree_head, country_code);
       break;
     case 4:
       printf("Enter country code: \n");
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
       scanf("%i", &code4);
       Tree *res = search_node(tree_head, code4);
       printf("Name: %s", res->name);
-      printf("Code: %i", res->code);
+      printf("Code: %i\n", res->code);
       break;
 
     default:

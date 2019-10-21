@@ -191,7 +191,6 @@ Tree *get_prev(Tree *head, int value)
   return NULL;
 }
 
-//Revize et
 Tree *delete_node(Tree *head, int value)
 {
   Tree *cur = head;
@@ -210,12 +209,11 @@ Tree *delete_node(Tree *head, int value)
         {
           prev->left = max->left;
           free(max);
-          return head;
         }
-        prev->right = NULL;
-        return head;
+        else
+          prev->right = NULL;
       }
-      if (cur->right)
+      else if (cur->right)
       {
         Tree *min = find_min(cur->right);
         Tree *prev = get_prev(head, min->code);
@@ -225,21 +223,21 @@ Tree *delete_node(Tree *head, int value)
         {
           prev->right = min->right;
           free(min);
-          return head;
         }
-        prev->left = NULL;
-        return head;
+        else
+          prev->left = NULL;
       }
-      if (!cur->right && !cur->left)
+      else if (!cur->right && !cur->left)
       {
         Tree *prev = get_prev(head, cur->code);
         if (cur->code < prev->code)
           prev->left = NULL;
         else
           prev->right = NULL;
+        free(cur->name);
         free(cur);
-        return head;
       }
+      return head;
     }
 
     //keep going
@@ -303,6 +301,7 @@ void amazingly_print_tree(Tree *tree_head)
     print_list(get_level(tree_head, i), space_between, start_space);
     printf("\n");
   }
+  printf("-----------------------------\n");
 }
 
 void print_tree(Tree *head, int order)
@@ -426,18 +425,16 @@ Tree *balance_tree(Tree *head)
   return head;
 }
 
-Tree *insert_avl(Tree *head, Tree *new)
+void insert_avl(Tree **head, Tree *new)
 {
-  head = insert_node(head, new);
-  head = balance_tree(head);
-  return head;
+  *head = insert_node(*head, new);
+  *head = balance_tree(*head);
 }
 
-Tree *delete_avl(Tree *head, int value)
+void delete_avl(Tree **head, int value)
 {
-  head = delete_node(head, value);
-  head = balance_tree(head);
-  return head;
+  *head = delete_node(*head, value);
+  *head = balance_tree(*head);
 }
 
 int is_balanced(Tree *head)
