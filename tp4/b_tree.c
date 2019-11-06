@@ -1,16 +1,21 @@
 #include "b_tree.h"
+#include <stdlib.h>
+#include <stdio.h>
 
-void sort_values(int* ar[2], int array_size){
-    int* a = *ar;
-    for (int i = 0; i < (array_size - 1); ++i){
-      for (int j = 0; j < array_size - 1 - i; ++j ){
-           if (a[j] > a[j+1]){
-                int temp = a[j+1];
-                a[j+1] = a[j];
-                a[j] = temp;
-            }
-        }
-    }
+int cmpfunc (const void * a, const void * b) {
+   if(*(int*)a == 0){ return *(int*)a;}
+   else if (*(int*)b == 0){ return *(int*)b;}
+   return ( *(int*)a - *(int*)b );
+}
+
+void sort(int* ar[2]){
+    qsort(ar,M,sizeof(int),cmpfunc);
+}
+
+void swap_array(int** ar1,int **ar2){
+    int *tmp = *ar1;
+    *ar1 = *ar2;
+    *ar2 = tmp;
 }
 
 void print_tree(BTree* head){
@@ -27,6 +32,13 @@ void print_tree(BTree* head){
             print_tree(head->childs[i]);
         }
         printf("\n");
+    }
+}
+
+void print_root(BTree* head){
+    printf("Root->");
+    for(int i = 0 ; i < M-1; i++){
+        printf(" %i",head->values[i]);
     }
 }
 
@@ -69,20 +81,6 @@ int search_dbtree(BTree**head,int search_value){
     return search_dbtree(&(root->childs[child_index]),search_value);
 }
 
-/*
-            //sort values
-            int * a = root->values;
-            for (int i = 0; i < (M -2); ++i){
-                for (int j = 0; j < M- 2 - i; ++j ){
-                    if (a[j] > a[j+1] && a[j+1] !=0 ){
-                        int temp = a[j+1];
-                        a[j+1] = a[j];
-                        a[j] = temp;
-                    }
-                }
-            }
-*/
-
 BTree* push_dbtree(BTree* head,int val){
     BTree* root = head;
 
@@ -95,9 +93,10 @@ BTree* push_dbtree(BTree* head,int val){
     //find proper child to add 
     int child_index = 0;
     for(int i = 0; i < M-1 ; i++){
-        if(val > root->values[i])
+        if(val > root->values[i] && root->values[i]){
             child_index = i+1;
-        else break;
+            break;
+        }
     }
     BTree* child = root->childs[child_index];
     if(!root->childs[child_index])
@@ -105,16 +104,13 @@ BTree* push_dbtree(BTree* head,int val){
     
     //if child has at least 1 empty spot, fill it 
     if(root->childs[child_index]->values[M-2] == 0){
-        root->childs[child_index] = push_dbtree(root->childs[child_index], val);
+        //root->childs[child_index] = push_dbtree(root->childs[child_index], val);
         //sort it
-        int * a = root->childs[child_index]->values;
-        for (int i = 0; i < (M -2); ++i){
-            for (int j = 0; j < M- 2 - i; ++j ){
-                if (a[j] > a[j+1] && a[j+1] !=0 ){
-                    int temp = a[j+1];
-                    a[j+1] = a[j];
-                    a[j] = temp;
-                }
+        for(int i = 0 ; i < M ; i++){
+            if(root->childs[child_index]->values[i] == 0){
+                root->childs[child_index]->values[i] = val;
+                sort(root->childs[child_index]->values);
+                break;
             }
         }
     }
@@ -125,24 +121,37 @@ BTree* push_dbtree(BTree* head,int val){
         if(root->values[M-2]==0){
             //bu noktada child'ı bölüp root'a eleman taşı
             //önce ortadaki elemanı bulmak için taşan halini sırala
-            int over_fill[M] = {child->values[0],child->values[1],val};
-        
-            //sort it
+            int over_fill[3] = {child->values[0],child->values[1],val};
+
+            //sırala
             int * a = over_fill;
-            for (int i = 0; i < (M -2); ++i){
-                for (int j = 0; j < M- 2 - i; ++j ){
-                    if (a[j] > a[j+1] && a[j+1] !=0 ){
-                        int temp = a[j+1];
-                        a[j+1] = a[j];
-                        a[j] = temp;
+            qsort(a,M,sizeof(int),cmpfunc);
+
+            //root'a ortanca elemanı yükseltmek için nereye gideceğini bul 
+            int mean = over_fill[1];
+            
+            root->values[M-2] = mean;
+            sort(root->values);
+
+            //root'un çocuklarını da değerleri gibi sıralarsam
+            //sonunda olması gerektiği hale gelir
+            for(int i = 0; i < M ; i++){
+                for(int j = 0; j < M-1 ; j++){
+                    //kıyaslamayı her dizinin 0. elemanı için yap
+                    //eğer çocuk varsa 0. elemanı da olmalı
+                    if(root->childs[i] && root->childs[i+1]){
+                        if(root->childs[i]->values[0] > root->childs[i+1]->values[0]){
+                            swap_array(root->childs[i]->values,root->childs[i+1]->values);
+                        }
+                        else if(root->childs[i]->values[0] == 0){
+                            swap_array(root->childs[i]->values,root->childs[i+1]->values);
+                        }
                     }
                 }
             }
 
-            //root'a ortanca elemanı yükseltmek için nereye gideceğini bul 
-            int mean = over_fill[1];
-            int mean_index = child_index-1;
-
+            /*int mean_index = child_index-1;
+            
             //gideceği yere eklemeden önce bütün değerleri bi sağa kaydır 
             for(int i = M-3; i != mean_index; i--){
                 root->values[i+1] = root->values[i];
@@ -165,8 +174,8 @@ BTree* push_dbtree(BTree* head,int val){
             root->childs[child_index+1]->values[1] = root->childs[child_index+1]->values[2] = 0;
             
             //büyük bir hata çıkmaması için dua et
+            */
         }
-
 
     }
     return root;

@@ -1,15 +1,25 @@
 #include "b_tree.h"
 
-int values[] = {65,60,82,97,50,62,80,85,87,98,99};
-int xvalues[] = {22,15,15,10,111};
+void swap_array(int** ar1,int **ar2);
+
+int values[] = {61,60,82,97,50,62,80,85,87,98,99};
+//int xvalues[] = {65,60,82,97};
 
 int main(){
-    
+
     BTree* head = create_dbtree();
     int ar_size = sizeof(values)/sizeof(int);
     for(int i = 0; i < ar_size; i++){
         head = push_dbtree(head,values[i]);
     }
-    print_tree(head);
+    for(int i = 0 ; i < M-1; i++){
+        printf("Root->%i. = %i\n",i,head->values[i]);
+    }
+    for(int i = 0 ; i < M; i++){
+       for(int j = 0 ;j < M-1; j++){
+           if(head->childs[i])
+               printf("Child%i->%i. = %i\n",i,j,head->childs[i]->values[j]);
+        }
+    }
     return 0;
 }

@@ -16,5 +16,6 @@ BTree* create_dbtree();
 BTree* push_dbtree(BTree* head,int val);
 int is_leaf(BTree** head);
 void sort_values(int** ar, int array_size);
+int cmpfunc (const void * a, const void * b);
 
 #endif
