@@ -120,23 +120,31 @@ BTree* push_dbtree(BTree* head,int val){
         //eğer rootta boş yer varsa ona eleman taşıcam
         if(root->values[M-2]==0){
             //bu noktada child'ı bölüp root'a eleman taşı
-            //önce ortadaki elemanı bulmak için taşan halini sırala
+
+            //önce ortadaki elemanı bulmak için taşan halini bul
             int over_fill[3] = {child->values[0],child->values[1],val};
+            qsort(over_fill,M,sizeof(int),cmpfunc); 
 
-            //sırala
-            int * a = over_fill;
-            qsort(a,M,sizeof(int),cmpfunc);
-
-            //root'a ortanca elemanı yükseltmek için nereye gideceğini bul 
+            //root'a ortanca elemanı yükselt ve sırala
             int mean = over_fill[1];
-            
             root->values[M-2] = mean;
             sort(root->values);
 
+            //çocukta sadece bir eleman kalıcak
+            root->childs[child_index]->values[0] = over_fill[0];
+            for(int i = 1; i < M-1; i++){
+                root->childs[child_index]->values[i] = 0;
+            }
+
+            //normalde boş olan bi çocuğa taşan çocuktan bir eleman gelicek ve sıralanacak
+
+            root->childs[M-1] = create_dbtree();
+            root->childs[M-1]->values[0] = over_fill[2];
+
             //root'un çocuklarını da değerleri gibi sıralarsam
             //sonunda olması gerektiği hale gelir
-            for(int i = 0; i < M ; i++){
-                for(int j = 0; j < M-1 ; j++){
+            for(int i = 1; i < M ; i++){
+                for(int j = 0; j < M-1; j++){
                     //kıyaslamayı her dizinin 0. elemanı için yap
                     //eğer çocuk varsa 0. elemanı da olmalı
                     if(root->childs[i] && root->childs[i+1]){
@@ -150,31 +158,6 @@ BTree* push_dbtree(BTree* head,int val){
                 }
             }
 
-            /*int mean_index = child_index-1;
-            
-            //gideceği yere eklemeden önce bütün değerleri bi sağa kaydır 
-            for(int i = M-3; i != mean_index; i--){
-                root->values[i+1] = root->values[i];
-            }
-
-            //ortancayı yerine koy
-            root->values[mean_index] = mean;
-
-            //çocukları da sağa taşı
-            for(int i = M-2; i!= child_index; i--){
-                root->childs[i+1] = root->childs[i];
-            }
-
-            //child indexteki değerleri ve bir sağındakileri yeni değerler ile güncelle
-            root->childs[child_index]->values[0] = over_fill[0];
-            root->childs[child_index+1]->values[0] = over_fill[2];
-
-            //kalan değerleri 0 yap
-            root->childs[child_index]->values[1] = root->childs[child_index]->values[2] = 0;
-            root->childs[child_index+1]->values[1] = root->childs[child_index+1]->values[2] = 0;
-            
-            //büyük bir hata çıkmaması için dua et
-            */
         }
 
     }
