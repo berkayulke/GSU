@@ -49,8 +49,6 @@ BTree* create_dbtree(){
 
     for(int i = 0; i < M ; i ++){
         root->childs[i] = NULL;
-        if(i!=M-1)
-            root->values[i] = 0;
     }
 
     return root;
@@ -92,7 +90,7 @@ BTree* push_dbtree(BTree* head,int val){
 
     //find proper child to add 
     int child_index = 0;
-    for(int i = 0; i < M-1 ; i++){
+    for(int i = 0; i < M ; i++){
         if(val > root->values[i] && root->values[i]){
             child_index = i+1;
             break;
@@ -103,10 +101,9 @@ BTree* push_dbtree(BTree* head,int val){
         root->childs[child_index] = create_dbtree();
     
     //if child has at least 1 empty spot, fill it 
-    if(root->childs[child_index]->values[M-2] == 0){
-        //root->childs[child_index] = push_dbtree(root->childs[child_index], val);
+    if(root->childs[child_index]->values[1] == 0){
         //sort it
-        for(int i = 0 ; i < M ; i++){
+        for(int i = 0 ; i < M-1 ; i++){
             if(root->childs[child_index]->values[i] == 0){
                 root->childs[child_index]->values[i] = val;
                 sort(root->childs[child_index]->values);

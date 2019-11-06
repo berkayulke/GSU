@@ -2,9 +2,9 @@
 
 void swap_array(int** ar1,int **ar2);
 
-int values[] = {61,60,82,97,50,62,80,85};//,87,98,99};
-//int xvalues[] = {65,60,82,97};
-
+int values[] = {61,60,82,97,50,62,80,85,87,98,99};
+// 85 kada insert edebiliyor sonrasında hata veriyor
+// Eğer seg fault alırsanız tekrar compile etmeden tekrar çalıştırmayı deneyin
 int main(){
 
     BTree* head = create_dbtree();
