@@ -26,6 +26,7 @@ int level(kd_tree* root);
 
 kd_tree* insert(kd_tree* root,kd_node* node);
 kd_tree* init_tree();
+kd_tree* init_second_tree();
 
 kd_node* search_by_name(kd_tree* root,char* name);
 kd_node* search_by_index(kd_tree* root,char index);
@@ -33,5 +34,7 @@ kd_node* search_by_index(kd_tree* root,char index);
 void print_inorder(kd_tree* root);
 void print_preorder(kd_tree* root);
 void print_postorder(kd_tree* root);
+
+kd_node* search_coordinate(kd_tree* root);
 
 #endif
