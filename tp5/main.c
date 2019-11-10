@@ -9,11 +9,18 @@ extern int alpabeth[];
 extern int alpa_size;
 
 int main(){
+    kd_tree* root = init_second_tree();
 
-    kd_tree* root = init_tree();
+    kd_node* cases[3];
 
-    kd_tree* xd = init_second_tree();
-    print_inorder(xd);
+    cases[0] = create_node(25,25,'X',"Terlikciler Sokagi");
+    cases[1] = create_node(14,34,'X',"Ic Cebeci Han");
+    cases[2] = create_node(5,27,'X',"Hatip Emin Han");
+
+    for(int i = 0; i < 3; ++i){
+        kd_node* nearest = search_coordinate(root,cases[i]);
+        print_node(nearest);
+    }
 
     return 0;
 }

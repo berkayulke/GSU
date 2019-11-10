@@ -135,6 +135,10 @@ kd_node* search_by_index(kd_tree* root,char index){
     }
 }
 
+void print_node(kd_node* node){
+    printf("(%i,%i) '%c' %s\n",node->x,node->y,node->index,node->name);
+}
+
 void print_inorder(kd_tree* root){
     if(!root)
         return;
@@ -167,21 +171,21 @@ double distance(kd_node* n1, kd_node* n2){
 }
 
 kd_node* search_coordinate(kd_tree* root,kd_node* search_node){
-    if(!root) 
+    if(!root)
         return NULL;
 
-    double left_dist = distance(root->left->node,search_node);
-    double right_dist = distance(root->right->node,search_node);
-
-    if(left_dist < right_dist){
-        if(root->left)
+    if(root->left && root->right){
+        double left_dist = distance(root->left->node,search_node);
+        double right_dist = distance(root->right->node,search_node);
+        if(left_dist < right_dist)
             return search_coordinate(root->left,search_node);
-        return root;
+        return search_coordinate(root->right,search_node);
     }
-    else{
-        if(root->right)
-            return search_coordinate(root->right,search_node);
-        return root;        
-    }
-
+    else if(root->left)
+        return search_coordinate(root->left,search_node);
+    
+    else if(root->right)
+        return search_coordinate(root->right,search_node);
+    
+    return root->node;
 }

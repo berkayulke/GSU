@@ -31,10 +31,11 @@ kd_tree* init_second_tree();
 kd_node* search_by_name(kd_tree* root,char* name);
 kd_node* search_by_index(kd_tree* root,char index);
 
+void print_node(kd_node* node);
 void print_inorder(kd_tree* root);
 void print_preorder(kd_tree* root);
 void print_postorder(kd_tree* root);
 
-kd_node* search_coordinate(kd_tree* root);
+kd_node* search_coordinate(kd_tree* root,kd_node* search_node);
 
 #endif
