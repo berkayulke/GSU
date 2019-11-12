@@ -38,6 +38,7 @@ void print_sensors(Sensor* s);
 Sensor* read_sensors(char* file_name);
 
 float** get_distances(Sensor* s);
-Graph* get_graph(Sensor* sensors);
+Graph* get_graph(Sensor* sensors,int min_dis);
 
+void print_graph(Graph* graph,Sensor* sensors,float** distances);
 #endif

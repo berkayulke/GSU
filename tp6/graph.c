@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "tree.h"
+#include "graph.h"
 int sensor_amount=0;
 float distance(float x1,float y1, float x2, float y2){
     float first = x1 - x2;
@@ -48,6 +48,8 @@ void add_edge(Graph* graph,int source,int dest){
         cursor->next = node;
     }
 
+    graph->list[source].node_amount++;
+
     node = new_adj_list_node(source);
     cursor = graph->list[dest].head;
     
@@ -59,6 +61,7 @@ void add_edge(Graph* graph,int source,int dest){
         cursor = cursor->next;
     cursor->next = node;
     }
+    graph->list[dest].node_amount++;
 }
 
 void line_counter(char* file_name){
@@ -117,18 +120,28 @@ Graph* matrix_to_graph(Sensor* sensors,float** distances){
 }
 
 void print_graph(Graph* graph,Sensor* sensors,float** distances){
-    for(int i = 0; i < graph->node_amount; ++i){
+    for(int i = 0; i < graph->node_amount; i++){
         AdjListNode* cursor = graph->list[i].head;
         Sensor cur_sens = sensors[i];
-        printf("SensorID: %i (%.2f,%.2f) ",i,cur_sens.x,cur_sens.y);
-        printf("Merkez Dugume olan uzakligi %f ",distances[0][i]);
-        printf("Komsu sayisi %i ",graph->list[i].node_amount);
-        printf("Komusularinin IDleri = { ");
+        
+        int adj_counter = 0;
         while(cursor){
-            printf("%i ",cursor->dest);
+            adj_counter++;
             cursor = cursor->next;
         }
-        printf(" }\n");
+        cursor = graph->list[i].head;
+
+        printf("SensorID: %i (%.2f,%.2f) ",i,cur_sens.x,cur_sens.y);
+        printf("Merkez Dugume olan uzakligi %f ",distances[0][i]);
+        printf("Komsu sayisi %i ",adj_counter);
+        printf("Komusularinin IDleri = { ");
+        if(!adj_counter)
+            printf("Not:Bu sensorun hic komsusu yoktur. Izole dugum\n");
+        while(cursor){
+            printf("%i, ",cursor->dest);
+            cursor = cursor->next;
+        }
+        printf("}\n");
     }
 }
 
@@ -149,12 +162,14 @@ float** get_distances(Sensor* s){
 }
 
 //bütün bağları oluşturur
-Graph* get_graph(Sensor* sensors){
+Graph* get_graph(Sensor* sensors,int min_dis){
     float** distances = get_distances(sensors);
     Graph* graph = create_graph(sensor_amount);
     for(int i = 0; i < sensor_amount; ++i)
-        for(int j = i+1; j < sensor_amount; ++j)
-            if(distances[i][j] < 30)
+        for(int j = 0; j < sensor_amount; ++j)
+            if(distances[i][j] < min_dis){
                 add_edge(graph,i,j);
+                //printf("i = %i   j = %i\n",i,j);
+            }
     return graph;
 }
