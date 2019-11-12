@@ -63,58 +63,6 @@ void line_counter(char* file_name){
     fclose(file);
 }
 
-Sensor* get_sensors(char* file_name){
-    int error_check = 0;
-    FILE* file = fopen(file_name,"r");
-    line_counter(file_name);
-    if(!file){
-        printf("Couldn't open file!\n");
-        return NULL;
-    }
-    
-    if(error_check != 0){
-        printf("Couldn't move cursor\n");
-        return NULL;
-    }
-    printf("Total sensor amount = %i\n",sensor_amount);
-
-    int id;
-    float x,y,z;
-        
-    int counter = 0;
-    Sensor* sensor_arr = NULL;
-    while(!feof(file)){
-        printf("counter = %i\n",counter);
-        error_check = fscanf(file,"%i,%f,%f,%f\n",&id,&x,&y,&z);
-        
-        if(error_check != 4){
-            printf("Couldn't read file during initializing array! line: %d\n", __LINE__);
-            return NULL;
-        }
-
-        ++counter;
-        Sensor* temp_alloc = realloc(sensor_arr,counter*sizeof(Sensor));
-        if(temp_alloc)
-            sensor_arr = temp_alloc;
-        else{
-            printf("Realloc error!\n");
-            return NULL;
-        }
-        sensor_arr[counter-1].id = id;
-        sensor_arr[counter-1].x = x;
-        sensor_arr[counter-1].y = y;
-        sensor_arr[counter-1].z = z; 
-    }
-
-    error_check = fclose(file);
-    if(error_check != 0){
-            printf("Couldn't close file!\n");
-            return NULL;
-    }
-
-    return sensor_arr;
-}
-
 Sensor* read_sensors(char* file_name){
     FILE* file = fopen(file_name,"r");
     if(!file)
@@ -148,6 +96,30 @@ void print_sensors(Sensor* s){
         s[i].x * s[i].y,
         s[i].y,
         s[i].z);
+    }
+}
+
+Graph* matrix_to_graph(Sensor* sensors,float** distances){
+    Graph* graph = create_graph(sensor_amount);
+    for(int i=0;i < 70; ++i)
+        for(int j=i+1;j<70;++j)
+            if(distances[i][j] < 30)
+                add_edge(graph,i,j);
+}
+
+void print_graph(Graph* graph,Sensor* sensors,float** distances){
+    for(int i = 0; i < graph->node_amount; ++i){
+        AdjListNode* cursor = graph->list[i]->head;
+        Sensor cur_sens = sensors[i];
+        printf("SensorID: %i (%.2f,%.2f) ",i,cur_sens.x,cur_sens.y);
+        printf("Merkez Dugume olan uzakligi %f ",distance[0][i]);
+        printf("Komsu sayisi %i ",graph->list[i]->node_amount);
+        printf("Komusularinin IDleri = { ");
+        while(cursor){
+            printf("%i ",cursor->dest);
+            cursor = cursor->next;
+        }
+        printf(" }\n");
     }
 }
 
