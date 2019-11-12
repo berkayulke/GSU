@@ -10,7 +10,6 @@ extern int alpa_size;
 
 int main(){
     kd_tree* root = init_second_tree();
-
     kd_node* cases[3];
 
     cases[0] = create_node(25,25,'X',"Terlikciler Sokagi");
@@ -19,7 +18,9 @@ int main(){
 
     for(int i = 0; i < 3; ++i){
         kd_node* nearest = search_coordinate(root,cases[i]);
+        printf("nearest for %s is:\n",cases[i]->name);
         print_node(nearest);
+        printf("\n");
     }
 
     return 0;

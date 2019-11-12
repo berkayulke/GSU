@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "tree.h"
+#define infinity 9999
 
 int xs[] = {16,5,4,6,3,4,4,5,16,25,32,39,46,45,45,44,32,26};
 int ys[] = {43,33,22,17,10,5,4,2,3,2,3,2,7,13,17,24,29,31};
@@ -167,6 +168,8 @@ void print_postorder(kd_tree* root){
 }
 
 double distance(kd_node* n1, kd_node* n2){
+    if(!n1||!n2)
+        return infinity;
     return sqrt( pow(n1->x-n2->x,2)+pow(n1->y-n2->y,2) );
 }
 
@@ -177,15 +180,29 @@ kd_node* search_coordinate(kd_tree* root,kd_node* search_node){
     if(root->left && root->right){
         double left_dist = distance(root->left->node,search_node);
         double right_dist = distance(root->right->node,search_node);
+        double root_dist = distance(root->node,search_node);
+
+        if(root_dist > left_dist && root_dist > right_dist)
+            return root->node;
+
         if(left_dist < right_dist)
             return search_coordinate(root->left,search_node);
         return search_coordinate(root->right,search_node);
     }
-    else if(root->left)
+    else if(root->left){
+        double left_dist = distance(root->left->node,search_node);
+        double root_dist = distance(root->node,search_node);
+        if(root_dist > left_dist)
+            return root->node;
         return search_coordinate(root->left,search_node);
-    
-    else if(root->right)
+
+    }
+    else if(root->right){
+        double right_dist = distance(root->right->node,search_node);
+        double root_dist = distance(root->node,search_node);
+        if(root_dist > right_dist)
+            return root->node;
         return search_coordinate(root->right,search_node);
-    
+    }
     return root->node;
 }
