@@ -3,13 +3,14 @@
 #include "tree.h"
 extern int sensor_amount;
 
-//bu değerli forda tanımlayınca hata veriyor ???
 int main(){
     char file_name[] = "sensor_locations.csv";
     Sensor* sensors; 
-    sensors = read_sensors(file_name);
-    float**ar=get_distances(sensors);
     
-
+    sensors = read_sensors(file_name);
+    float**distances = get_distances(sensors);
+    Graph* graph = get_graph(sensors);
+    
+    //print_graph()
     return 0;
 }

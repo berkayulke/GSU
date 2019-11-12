@@ -30,7 +30,7 @@ Graph* create_graph(int node_amount){
     
     graph->list = malloc(node_amount*sizeof(AdjList));
     for(int i = 0; i < node_amount; ++i){
-        graph->list[i].node_amount =0;
+        graph->list[i].node_amount = 0;
         graph->list[i].head = NULL;
     }
     return graph;
@@ -40,16 +40,25 @@ void add_edge(Graph* graph,int source,int dest){
     AdjListNode* node = new_adj_list_node(dest);
     AdjListNode* cursor = graph->list[source].head;
     
-    while(cursor->next)
-        cursor = cursor->next;
-    cursor->next = node;
+    if(!cursor) 
+        graph->list[source].head = node;
+    else{
+        while(cursor->next)
+            cursor = cursor->next;
+        cursor->next = node;
+    }
 
     node = new_adj_list_node(source);
     cursor = graph->list[dest].head;
     
+    if(!cursor)
+        graph->list[source].head = node;
+    
+    else{
     while(cursor->next)
         cursor = cursor->next;
     cursor->next = node;
+    }
 }
 
 void line_counter(char* file_name){
@@ -109,11 +118,11 @@ Graph* matrix_to_graph(Sensor* sensors,float** distances){
 
 void print_graph(Graph* graph,Sensor* sensors,float** distances){
     for(int i = 0; i < graph->node_amount; ++i){
-        AdjListNode* cursor = graph->list[i]->head;
+        AdjListNode* cursor = graph->list[i].head;
         Sensor cur_sens = sensors[i];
         printf("SensorID: %i (%.2f,%.2f) ",i,cur_sens.x,cur_sens.y);
-        printf("Merkez Dugume olan uzakligi %f ",distance[0][i]);
-        printf("Komsu sayisi %i ",graph->list[i]->node_amount);
+        printf("Merkez Dugume olan uzakligi %f ",distances[0][i]);
+        printf("Komsu sayisi %i ",graph->list[i].node_amount);
         printf("Komusularinin IDleri = { ");
         while(cursor){
             printf("%i ",cursor->dest);
@@ -127,7 +136,6 @@ void print_graph(Graph* graph,Sensor* sensors,float** distances){
 float** get_distances(Sensor* s){
     float** a = malloc(sensor_amount*sizeof(float*));
 
-    //iki loop'u birleştirince hata veriyor ???
     for(int i = 0; i < sensor_amount;i++)
         a[i] = malloc(sensor_amount*sizeof(float));
 
@@ -144,12 +152,9 @@ float** get_distances(Sensor* s){
 Graph* get_graph(Sensor* sensors){
     float** distances = get_distances(sensors);
     Graph* graph = create_graph(sensor_amount);
-    for(int i = 0; i < sensor_amount; ++i){
-        for(int j = i+1; j<sensor_amount; ++j){
-            if(distances[i][j] < 30){
+    for(int i = 0; i < sensor_amount; ++i)
+        for(int j = i+1; j < sensor_amount; ++j)
+            if(distances[i][j] < 30)
                 add_edge(graph,i,j);
-            }
-        }
-    }
     return graph;
 }

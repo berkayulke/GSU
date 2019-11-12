@@ -17,13 +17,15 @@ typedef struct AdjListNode{
 }AdjListNode;
 
 typedef struct AdjList{
-    //buna gerek olmayabilir
+    //kaç eleman var
     int node_amount;
+    //linkedlist
     AdjListNode* head;
 }AdjList;
 
 typedef struct Graph{
     int node_amount;
+    //bu bildiğin array, array'in indeksi
     AdjList* list;
 }Graph;
 
@@ -36,5 +38,6 @@ void print_sensors(Sensor* s);
 Sensor* read_sensors(char* file_name);
 
 float** get_distances(Sensor* s);
+Graph* get_graph(Sensor* sensors);
 
 #endif
