@@ -30,9 +30,10 @@ typedef struct Graph{
 AdjListNode* new_adj_list_node(int dest);
 Graph* create_graph(int node_amount);
 void add_edge(Graph* graph,int source,int dest);
-Sensor* get_sensor(char* file_name);
+Sensor* get_sensors(char* file_name);
 float distance(float x1,float y1, float x2, float y2);
 void print_sensors(Sensor* s);
+Sensor* read_sensors(char* file_name);
 
 float** get_distances(Sensor* s);
 

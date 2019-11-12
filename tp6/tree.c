@@ -52,36 +52,93 @@ void add_edge(Graph* graph,int source,int dest){
     cursor->next = node;
 }
 
-Sensor* get_sensor(char* file_name){
+void line_counter(char* file_name){
     FILE* file = fopen(file_name,"r");
-    // Ilk satırı geç
-    char* c;
-    fscanf(file,"%[^\n]",c);
-
-    int id = 0;
-    float x,y,z;
-
-    Sensor* sensor_arr = malloc(sizeof(Sensor));
-    fscanf(file,"%i,%f,%f,%f",&id,&x,&y,&z);
-    sensor_arr[0].id = id;
-    sensor_arr[0].x = x;
-    sensor_arr[0].y = y;
-    sensor_arr[0].z = z;
-    
-    int counter = 1;
-
+    char* c = malloc(1024*sizeof(char));
     while(!feof(file)){
-        fscanf(file,"%i,%f,%f,%f\n",&id,&x,&y,&z);
+        char* temp = fgets(c,1024,file);
+        
+        sensor_amount++;
+    }
+    fclose(file);
+}
+
+Sensor* get_sensors(char* file_name){
+    int error_check = 0;
+    FILE* file = fopen(file_name,"r");
+    line_counter(file_name);
+    if(!file){
+        printf("Couldn't open file!\n");
+        return NULL;
+    }
+    
+    if(error_check != 0){
+        printf("Couldn't move cursor\n");
+        return NULL;
+    }
+    printf("Total sensor amount = %i\n",sensor_amount);
+
+    int id;
+    float x,y,z;
+        
+    int counter = 0;
+    Sensor* sensor_arr = NULL;
+    while(!feof(file)){
+        printf("counter = %i\n",counter);
+        error_check = fscanf(file,"%i,%f,%f,%f\n",&id,&x,&y,&z);
+        
+        if(error_check != 4){
+            printf("Couldn't read file during initializing array! line: %d\n", __LINE__);
+            return NULL;
+        }
+
         ++counter;
-        sensor_arr = realloc(sensor_arr,counter*sizeof(Sensor));
+        Sensor* temp_alloc = realloc(sensor_arr,counter*sizeof(Sensor));
+        if(temp_alloc)
+            sensor_arr = temp_alloc;
+        else{
+            printf("Realloc error!\n");
+            return NULL;
+        }
         sensor_arr[counter-1].id = id;
         sensor_arr[counter-1].x = x;
         sensor_arr[counter-1].y = y;
         sensor_arr[counter-1].z = z; 
     }
-    sensor_amount = counter;
-    fclose(file);
+
+    error_check = fclose(file);
+    if(error_check != 0){
+            printf("Couldn't close file!\n");
+            return NULL;
+    }
+
     return sensor_arr;
+}
+
+Sensor* read_sensors(char* file_name){
+    FILE* file = fopen(file_name,"r");
+    if(!file)
+        printf("Couldn't open file\n");
+    line_counter(file_name);
+
+    Sensor* sensors = malloc(sensor_amount*sizeof(Sensor));
+
+    int id,counter = 0;
+    float x,y,z;
+    char line[1024];
+    if(!fgets(line,1024,file))
+        printf("Couldn't read first line \n");
+    for(int i = 0; i < sensor_amount; i++){
+        fscanf(file,"%i,%f,%f,%f\n",&id,&x,&y,&z);
+        sensors[counter].id = id;
+        sensors[counter].x = x;
+        sensors[counter].y = y;
+        sensors[counter].z = z; 
+        counter++;
+    }
+
+    fclose(file);
+    return sensors;
 }
 
 void print_sensors(Sensor* s){
@@ -97,7 +154,7 @@ void print_sensors(Sensor* s){
 //ar[i][j] değeri i. sensörün j. sensörle arasındaki mesafeyi döndürür
 float** get_distances(Sensor* s){
     float** a = malloc(sensor_amount*sizeof(float*));
-    
+
     //iki loop'u birleştirince hata veriyor ???
     for(int i = 0; i < sensor_amount;i++)
         a[i] = malloc(sensor_amount*sizeof(float));
@@ -111,11 +168,12 @@ float** get_distances(Sensor* s){
     return a;
 }
 
+//bütün bağları oluşturur
 Graph* get_graph(Sensor* sensors){
     float** distances = get_distances(sensors);
     Graph* graph = create_graph(sensor_amount);
     for(int i = 0; i < sensor_amount; ++i){
-        for(int j = 0; j<sensor_amount; ++j){
+        for(int j = i+1; j<sensor_amount; ++j){
             if(distances[i][j] < 30){
                 add_edge(graph,i,j);
             }
