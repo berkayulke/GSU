@@ -24,27 +24,28 @@ AdjListNode* new_adj_list_node(int dest){
     return new_node;
 }
 
-Graph* create_graph(int edge_amount){
+Graph* create_graph(int node_amount){
     Graph* graph = malloc(sizeof(Graph));
-    graph->edge_amount = edge_amount;
+    graph->node_amount = node_amount;
     
-    graph->list = malloc(edge_amount*sizeof(AdjList));
-    for(int i = 0; i < edge_amount; ++i)
-        graph->list[i] = NULL;
-
+    graph->list = malloc(node_amount*sizeof(AdjList));
+    for(int i = 0; i < node_amount; ++i){
+        graph->list[i].node_amount =0;
+        graph->list[i].head = NULL;
+    }
     return graph;
 }
 
 void add_edge(Graph* graph,int source,int dest){
     AdjListNode* node = new_adj_list_node(dest);
-    AdjListNode* cursor = graph->list[source]->head;
+    AdjListNode* cursor = graph->list[source].head;
     
     while(cursor->next)
         cursor = cursor->next;
     cursor->next = node;
 
     node = new_adj_list_node(source);
-    cursor = graph->list[dest]->head;
+    cursor = graph->list[dest].head;
     
     while(cursor->next)
         cursor = cursor->next;
@@ -83,10 +84,6 @@ Sensor* get_sensor(char* file_name){
     return sensor_arr;
 }
 
-float dis(Sensor s1,Sensor s2){
-    return s1.x - s2.x;
-}
-
 void print_sensors(Sensor* s){
     for(int i = 1; i < sensor_amount;i++){
         printf("ID:%i   (%.2f,%.2f,%.2f)\n",
@@ -97,7 +94,7 @@ void print_sensors(Sensor* s){
     }
 }
 
-//void get_distances(float*** ar,Sensor* s){
+//ar[i][j] değeri i. sensörün j. sensörle arasındaki mesafeyi döndürür
 float** get_distances(Sensor* s){
     float** a = malloc(sensor_amount*sizeof(float*));
     
@@ -112,4 +109,17 @@ float** get_distances(Sensor* s){
         }
     }
     return a;
+}
+
+Graph* get_graph(Sensor* sensors){
+    float** distances = get_distances(sensors);
+    Graph* graph = create_graph(sensor_amount);
+    for(int i = 0; i < sensor_amount; ++i){
+        for(int j = 0; j<sensor_amount; ++j){
+            if(distances[i][j] < 30){
+                add_edge(graph,i,j);
+            }
+        }
+    }
+    return graph;
 }
