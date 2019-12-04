@@ -24,7 +24,7 @@ void selection_sort(int **array, int size);
 void insertion_sort(int **array, int size);
 
 int partition(int **array, int low, int high);
-void quick_sort(int **array, int low, int high);
+void quick_sort(int* ar,int size);
 void quick_sort_for_test(int **array, int size);
 
 void merge(int *arr, int l, int m, int r);
@@ -32,6 +32,7 @@ void merge_sort(int arr[], int l, int r);
 void merge_sort_for_test(int **array, int size);
 
 int get_max(int *array, int size);
+int get_min(int *array, int size);
 void bucket_sort(int **array, int size);
 
 void shell_sort(int **array, int n);

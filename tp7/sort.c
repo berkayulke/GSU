@@ -3,6 +3,17 @@
 #include <time.h>
 #include <math.h>
 #include "sort.h"
+#define BUCKET_SIZE 1
+
+void is_sorted(int *array, int size)
+{
+    for (int i = 1; i < size; i++)
+        if (array[i] > array[i - 1])
+        {
+            printf("NOT SORTED MAN\n");
+            return;
+        }
+}
 
 void swap(int *x, int *y)
 {
@@ -22,6 +33,24 @@ int pop(int **ar, int size, int index)
     }
     cursor[size - 1] = -1;
     return ret_val;
+}
+
+int get_max(int *array, int size)
+{
+    int max = array[0];
+    for (int i = 1; i < size; i++)
+        if (array[i] > max)
+            max = array[i];
+    return max;
+}
+
+int get_min(int *array, int size)
+{
+    int min = array[0];
+    for (int i = 1; i < size; i++)
+        if (array[i] < min)
+            min = array[i];
+    return min;
 }
 
 int *create_random_array(int array_size)
@@ -87,7 +116,7 @@ void selection_sort(int **array, int size)
     {
         min_idx = i;
         for (int j = i + 1; j < size; j++)
-            if (arr[j] < arr[min_idx])
+            if (arr[j] > arr[min_idx])
                 min_idx = j;
         swap(&arr[min_idx], &arr[i]);
     }
@@ -99,16 +128,9 @@ void insertion_sort(int **array, int size)
     int key = 0;
     int j = 0;
     for (int i = 1; i < size; i++)
-    {
-        key = arr[i];
-        j = i - 1;
-        while (j >= 0 && arr[j] > key)
-        {
-            arr[j + 1] = arr[j];
-            j = j - 1;
-        }
-        arr[j + 1] = key;
-    }
+        for (int j = i - 1; j >= 0; j--)
+            if (arr[j] < arr[j + 1])
+                swap(&arr[j], &arr[j + 1]);
 }
 
 double test_algo(char *func_name, void (*sort)(int **, int))
@@ -122,102 +144,78 @@ double test_algo(char *func_name, void (*sort)(int **, int))
         ascendings[i] = create_sorted_array((int)pow(10, i + 2), ASCENDING);
         increasings[i] = create_sorted_array((int)pow(10, i + 2), INCREASING);
     }
-
+    char *types[] = {"sorted", "reversed", "random"};
     for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; ++j)
+    {
+            for (int j = 0; j < 3; ++j)
         {
             clock_t start = clock();
             sort(&all_array[i][j], (int)pow(10, j + 2));
+            is_sorted(all_array[i][j], (int)pow(10, j + 2));
             free(all_array[i][j]);
             clock_t stop = clock();
             double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-            printf("Time elapsed for %s\t in size %i\t ms: %.5f\n", func_name, (int)pow(10, i + 2), elapsed);
+            printf("Time elapsed for %s\t in %s\t size %i\t ms: %.5f\n", func_name,types[i], (int)pow(10, i + 2), elapsed);
             res += elapsed;
         }
+    }
     return res;
 }
 
-int partition(int **array, int low, int high)
+void quick_sort(int *ar, int size)
 {
-    int *arr = *array;
-    int pivot = arr[high];
-    int i = (low - 1);
-
-    for (int j = low; j <= high - 1; j++)
+    if (size <= 1)
+        return;
+    int piv_pos = 1;
+    swap(&ar[0], &ar[size / 2]);
+    for (int i = 0; i < size; i++)
     {
-        if (arr[j] < pivot)
-        {
-            i++;
-            swap(&arr[i], &arr[j]);
-        }
+        if (ar[0] < ar[i])
+            swap(&ar[i], &ar[piv_pos++]);
     }
-    swap(&arr[i + 1], &arr[high]);
-    return (i + 1);
-}
+    swap(&ar[0], &ar[piv_pos - 1]);
 
-void quick_sort(int **array, int low, int high)
-{
-    int *arr = *array;
-    if (low < high)
-    {
-        int pi = partition(array, low, high);
-        quick_sort(array, low, pi - 1);
-        quick_sort(array, pi + 1, high);
-    }
+    quick_sort(ar, piv_pos - 1);
+    quick_sort(ar + piv_pos, size - piv_pos);
 }
 
 void quick_sort_for_test(int **array, int size)
 {
-    quick_sort(array, 0, size);
+    quick_sort(*array, size);
 }
 
 void merge(int *arr, int l, int m, int r)
 {
-    int i, j, k;
-    int n1 = m - l + 1;
-    int n2 = r - m;
+    int j, k;
+    int left_size = m - l + 1;
+    int right_size = r - m;
 
-    int L[n1], R[n2];
+    int left_ar[left_size], right_ar[right_size];
 
-    for (i = 0; i < n1; i++)
-        L[i] = arr[l + i];
-    for (j = 0; j < n2; j++)
-        R[j] = arr[m + 1 + j];
+    for (int i = 0; i < left_size; i++)
+        left_ar[i] = arr[l + i];
+    for (j = 0; j < right_size; j++)
+        right_ar[j] = arr[m + 1 + j];
 
-    i = 0;
-    j = 0;
-    k = l;
-    while (i < n1 && j < n2)
+    int l_ind = 0;
+    int r_ind = 0;
+    int ar_ind = l;
+    while (l_ind < left_size && r_ind < right_size)
     {
-        if (L[i] <= R[j])
-        {
-            arr[k] = L[i];
-            i++;
-        }
+        if (left_ar[l_ind] > right_ar[r_ind])
+            arr[ar_ind++] = left_ar[l_ind++];
         else
-        {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
+            arr[ar_ind++] = right_ar[r_ind++];
     }
 
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
+    while (l_ind < left_size)
+        arr[ar_ind++] = left_ar[l_ind++];
 
-    while (j < n2)
-    {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
+    while (r_ind < right_size)
+        arr[ar_ind++] = right_ar[r_ind++];
 }
 
-void merge_sort(int arr[], int l, int r)
+void merge_sort(int *arr, int l, int r)
 {
     if (l < r)
     {
@@ -233,47 +231,69 @@ void merge_sort_for_test(int **array, int size)
     merge_sort(*array, 0, size);
 }
 
-int get_max(int *array, int size)
+void append(int *array, int size, int value)
 {
-    int max = array[0];
-    for (int i = 1; i < size; i++)
-        if (array[i] > max)
-            max = array[i];
-    return max;
+    for (int i = 0; i < size; i++)
+        if (array[i] == 0)
+        {
+            array[i] = value;
+            return;
+        }
 }
 
 void bucket_sort(int **array, int size)
 {
-    int *ar = *array;
-    int bucket[size];
-    int max = get_max(ar, size);
-    for (int i = 0; i <= max; i++)
-        bucket[i] = 0;
-    for (int i = 0; i < size; i++)
-        bucket[ar[i]]++;
+    int *cur = *array;
+    int min = get_min(cur, size);
+    int max = get_max(cur, size);
 
-    for (int i = 0, j = 0; i <= max; i++)
+    int bucket_count = (int)((max - min) / BUCKET_SIZE) + 1;
+    int *buckets[bucket_count];
+
+    for (int i = 0; i < bucket_count; i++)
     {
-        while (bucket[i] > 0)
+        buckets[i] = malloc(BUCKET_SIZE * sizeof(int));
+        for (int j = 0; j < BUCKET_SIZE; j++)
+            buckets[i][j] = 0;
+    }
+
+    for (int i = 0; i < bucket_count; i++)
+    {
+        int ind = (cur[i] - min) / BUCKET_SIZE;
+        append(buckets[ind], BUCKET_SIZE, cur[i]);
+    }
+    int ar_ind = 0;
+    for (int i = bucket_count - 1; i >= 0; i--)
+    {
+        quick_sort_for_test(&(buckets[i]), BUCKET_SIZE);
+        for (int j = BUCKET_SIZE - 1; j >= 0; j--)
         {
-            ar[j++] = i;
-            bucket[i]--;
+            cur[ar_ind++] = buckets[i][j];
         }
     }
 }
 
-void shell_sort(int **array, int n)
+void shell_sort(int **array, int size)
 {
-    int *arr = *array;
-    for (int gap = n / 2; gap > 0; gap /= 2)
+    int* cur = *array;
+    int inc = size/2;
+    while (inc != 0)
     {
-        for (int i = gap; i < n; i += 1)
+        for (int i = inc; i < size; i++)
         {
-            int temp = arr[i];
-            int j;
-            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap)
-                arr[j] = arr[j - gap];
-            arr[j] = temp;
+            int el = cur[i];
+            while (i >= inc && cur[i - inc] < el)
+            {
+                cur[i] = cur[i - inc];
+                i-=inc;
+            }
+            cur[i] = el;
+        }
+        if (inc == 2)
+            inc = 1;
+        else{
+            inc = (int)(inc*5/11);
         }
     }
+    
 }
