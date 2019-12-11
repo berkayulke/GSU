@@ -33,7 +33,7 @@ int nearest_square(int num)
 
 int is_prime(double num)
 {
-    if(num == 2)
+    if (num == 2)
         return 1;
     if (fmod(num, (double)2) == 0.0)
         return 0;
@@ -100,7 +100,10 @@ void vigenere_decoder(char *str, char *key)
 
     for (int i = 0; i < text_size; i++)
     {
-        str[i] = (str[i] - key[i % key_size] + 26) % 26 + 'a';
+        if (str[i] >= 'A' && str[i] <= 'Z')
+            str[i] = (str[i] - key[i % key_size] + 26) % 26 + 'A';
+        else
+            str[i] = (str[i] - key[i % key_size] + 26) % 26 + 'a';
     }
 }
 
