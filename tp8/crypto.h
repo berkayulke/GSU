@@ -12,6 +12,7 @@ enum case_type
 };
 
 int nearest_square(int num);
+int is_prime(double num);
 
 void ceaser_encoder(char *str, int move);
 void ceaser_decoder(char *str, int move);
@@ -22,5 +23,10 @@ void vigenere_decoder(char *str, char *key);
 
 void matrix_encoder(char *str);
 void matrix_decoder(char *str);
+
+int create_e_value(int totient);
+int calculate_d_value(int e, int totient);
+void rsa_encoder(char *str, double p, double q, double size);
+void rsa_decoder(char *str, double p, double q, double size);
 
 #endif

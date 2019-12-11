@@ -5,15 +5,43 @@
 #include <string.h>
 #include "crypto.h"
 
+char upper_case(char c)
+{
+    if (c <= 'z' && c >= 'a')
+        return c - 32;
+    return c;
+}
+
+char fit(char c)
+{
+    return upper_case(c) - 'E';
+}
+
+char unfit(char c)
+{
+    return c + 'E';
+}
+
 //karesi num'dan büyük olan en küçük sayıyı döndürür
 int nearest_square(int num)
 {
-    int i = 1;
-    while (i * i < num)
-        ++i;
-    return i;
+    int r = sqrt(num);
+    if (r * r == num)
+        return r;
+    return r + 1;
 }
 
+int is_prime(double num)
+{
+    if(num == 2)
+        return 1;
+    if (fmod(num, (double)2) == 0.0)
+        return 0;
+    for (double i = 3; i * i <= num; i += 2)
+        if (fmod(num, i) == 0.0)
+            return 0;
+    return 1;
+}
 void ceaser_encoder(char *str, int move)
 {
     int size = strlen(str);
@@ -112,21 +140,130 @@ void matrix_decoder(char *str)
         return;
     }
 
+    //eğer kare matrix gelmezse sağ alltan başlayarak en alt sırayı -1 ile doldur
+    //sonra sadece kalan boşluklara metni yerleştir
+    //solda sağa oku
+    //nasıl çalıştığı hakkında hiçbir fikrim yok
     char **matrix = malloc(mtr_size * sizeof(char *));
     for (int i = 0; i < mtr_size; i++)
         matrix[i] = malloc(mtr_size * sizeof(char));
 
-    for (int i = 0; i < str_size; i++)
+    for (int i = 0; i < mtr_size * mtr_size - str_size; i++)
     {
-        int ind1 = i / mtr_size;
-        int ind2 = i % mtr_size;
-        matrix[ind1][ind2] = str[i];
+        int ind1 = mtr_size - i / mtr_size - 1;
+        int ind2 = mtr_size - i % mtr_size - 1;
+        matrix[ind1][ind2] = -1;
     }
-    //print
-    for (int i = 0; i < mtr_size; i++)
+    for (int mtr_i = 0, str_i = 0; mtr_i < mtr_size * mtr_size; mtr_i++)
     {
-        for (int j = 0; j < mtr_size; j++)
-            printf("%c", matrix[i][j]);
-        printf("\n");
+        int ind1 = mtr_i % mtr_size;
+        int ind2 = mtr_i / mtr_size;
+
+        if (matrix[ind1][ind2] == -1)
+            continue;
+        matrix[ind1][ind2] = str[str_i++];
+    }
+
+    for (int mtr_i = 0, str_i = 0; mtr_i < mtr_size * mtr_size; mtr_i++)
+    {
+        int ind1 = mtr_i / mtr_size;
+        int ind2 = mtr_i % mtr_size;
+
+        if (matrix[ind1][ind2] == -1)
+            continue;
+        str[str_i++] = matrix[ind1][ind2];
+    }
+}
+
+int gcd(int a, int b)
+{
+    if (!a)
+        return b;
+    if (!b)
+        return a;
+    if (a == b)
+        return a;
+
+    if (a > b)
+        return gcd(a - b, b);
+    return gcd(a, b - a);
+}
+
+int create_e_value(int totient)
+{
+    return 2;
+    for (int i = 0; i < totient; i++)
+        if (gcd(i, totient) == 1)
+            return i;
+}
+
+int inverse_modulus(int a, int m)
+{
+    a = fmod(a, m);
+    for (int x = 1; x < m; x++)
+        if (fmod((a * x), m) == 1)
+            return x;
+}
+
+void rsa_encoder(char *str, double p, double q, double size)
+{
+    if (!is_prime(p) || !is_prime(q))
+    {
+        printf("No Bueno\n");
+        return;
+    }
+
+    double str_size = strlen(str);
+
+    double n = p * q;
+    double e = 2;
+    double totient = (p - 1) * (q - 1);
+
+    while (e < totient)
+    {
+        if (gcd(e, totient) == 1)
+            break;
+        e++;
+    }
+    double d = (1 + (2 * totient)) / e;
+
+    for (int i = 0; i < size; i++)
+    {
+        // 0-32 arasına çek
+        char inp = fit(str[i]);
+        double c = pow((double)inp, e);
+        c = fmod(c, n);
+        str[i] = unfit(c);
+    }
+}
+
+void rsa_decoder(char *str, double p, double q, double size)
+{
+    if (!is_prime(p) || !is_prime(q))
+    {
+        printf("No Bueno\n");
+        return;
+    }
+
+    double str_size = strlen(str);
+
+    double n = p * q;
+    double e = 2;
+    double totient = (p - 1) * (q - 1);
+
+    while (e < totient)
+    {
+        if (gcd(e, totient) == 1)
+            break;
+        e++;
+    }
+    double d = (1 + (2 * totient)) / e;
+
+    for (int i = 0; i < size; i++)
+    {
+        char inp = fit(str[i]);
+        double c = pow(inp, e);
+        c = fmod(c, n);
+        str[i] = unfit(c);
     }
 }
