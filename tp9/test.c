@@ -73,6 +73,28 @@ enum Credit note_to_credit(int note)
         return AA;
 }
 
+char *credit_to_string(enum Credit credit)
+{
+    switch (credit)
+    {
+    case AA:
+        return "AA";
+    case BA:
+        return "BA";
+    case BB:
+        return "BB";
+    case CB:
+        return "CB";
+    case CC:
+        return "CC";
+    case F:
+        return "F";
+    default:
+        break;
+    }
+    return NULL;
+}
+
 Student *create_student(char *name, char *surname, int *notes, enum Credit *credits, float average)
 {
     Student *new = malloc(sizeof(Student));
@@ -81,6 +103,7 @@ Student *create_student(char *name, char *surname, int *notes, enum Credit *cred
 
     for (int i = 0; i < COURS_AMOUNT; i++)
     {
+        printf("notes[%i] = %i\n", i, notes[i]);
         new->notes[i] = notes[i];
         new->credits[i] = credits[i];
     }
@@ -104,12 +127,12 @@ void print_student(Student *student)
     printf("Surname: %s\n", student->surname);
 
     printf("Notes: { ");
-    for (int i = 0; i++ < COURS_AMOUNT;)
+    for (int i = 0; i < COURS_AMOUNT; i++)
         printf("%i, ", student->notes[i]);
 
     printf("\b\b }\nCredits: { ");
-    for (int i = 0; i++ < COURS_AMOUNT;)
-        printf("%i, ", student->credits[i]);
+    for (int i = 0; i < COURS_AMOUNT; i++)
+        printf("%s, ", credit_to_string(student->credits[i]));
 
     printf("\b\b }\nAverage: %.2f\n\n", student->average);
 }
@@ -118,6 +141,17 @@ void print_class(StudentNode *head)
 {
     for (StudentNode *cur = head; cur; cur = cur->next)
         print_student(cur->student);
+}
+
+void print_tree(StudentTree *head)
+{
+    if (!head)
+        return;
+    if (!head->student->name)
+        return;
+    print_tree(head->right);
+    print_student(head->student);
+    print_tree(head->left);
 }
 
 void add_student_from_list(StudentNode **head, char **names, char **surnames, int size)
@@ -187,7 +221,7 @@ void add_student_to_tree(StudentTree **head, Student *student)
                 Student *temp = cur->left->student;
                 cur->left->student = student;
                 free(temp);
-                return
+                return;
             }
         }
         else
@@ -200,7 +234,7 @@ void add_student_to_tree(StudentTree **head, Student *student)
                 Student *temp = cur->right->student;
                 cur->right->student = student;
                 free(temp);
-                return
+                return;
             }
         }
     }

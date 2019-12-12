@@ -46,12 +46,16 @@ StudentNode *create_empty_class();
 void add_student(StudentNode **head, Student *student);
 Student *create_student(char *name, char *surname, int *notes, enum Credit *credits, float average);
 int is_class_empty(StudentNode *head);
+
 void print_class(StudentNode *head);
 void print_student(Student *student);
+void print_tree(StudentTree *head);
+
 void str_sort(char **names, char **surnames, int size);
 enum Credit note_to_credit(int note);
+char *credit_to_string(enum Credit credit);
 
 StudentTree *create_empty_tree();
-void add_student_to_tree(StudentTree** head,Student* student);
+void add_student_to_tree(StudentTree **head, Student *student);
 
 #endif
