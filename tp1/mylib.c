@@ -6,29 +6,17 @@
 
 int isLetter(char c)
 {
-  //printf("%c\n",c);
-  if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-  {
-    return 1;
-  }
-  return 0;
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
 int isDigit(char c)
 {
-  //printf("%c\n",c);
-  if ((c >= '0' && c <= '9'))
-  {
-    return 1;
-  }
-  return 0;
+  return c >= '0' && c <= '9';
 }
 
 int isEven(int value)
 {
-  if (value % 2 == 0)
-    return 1;
-  return 0;
+  return value % 2 == 0;
 }
 
 int isPrime(int value)
@@ -37,7 +25,7 @@ int isPrime(int value)
   {
     return 0;
   }
-  for (int i = 2; i < value / 2; i++)
+  for (int i = 2; i < sqrt(value) + 1; i++)
   {
     if (value % i == 0)
       return 0;
